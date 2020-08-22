@@ -47,3 +47,12 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+
+# Python cache
+*__pycache__/
+
+# Other directories
+raytrace_example/
+usefulGUI/
+raytrace_VTK/
+poincare_tool/
