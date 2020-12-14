@@ -8,13 +8,14 @@ from vispy.visuals.transforms import STTransform
 from vispy.scene.visuals import XYZAxis
 
 class OpticalAxis(LineVector):
-	def __init__(self, start=(0, 0, -5), length=10, color='tomato'):
+	def __init__(self, length=100, color='tomato'):
 		"""
 		Creates the Optical Axis of the openPyOpticalBench for rendering
-		:param: start: Starting coordinate of the optical axis
-		:param length: Length of the optical axis.
+		:param length: Length of the optical axis. Defaut: 100
 		:param color: Color to be shown when the optical Axis is being visualized (Optional)
+		TODO: Replace with infinite line
 		"""
+		start=(0,0,-length/2)
 		super().__init__(start, [0,0,1], length, color)
 
 

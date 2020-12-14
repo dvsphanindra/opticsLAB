@@ -5,11 +5,11 @@ class RectangularSurface(Plane):
 	def __init__(self, center, length=1.0, width=1.0, xTilt=0.0, yTilt=0.0, mediumAfter="Air", mediumBefore="Air", color="green"):
 		"""
 		Creates a plane surface with the given center and normal with the specified media
-		:param center: Center of the plane with respect to the pyOpticalBench coordinates
+		:param center: Center of the plane with respect to the pyOptiCAD coordinates
 		:param length: length of the plane. Default: 1
 		:param width: width of the plane. Default: 1
-		:param xTilt: tilt of the plane with respect to pyOpticalBench X axis
-		:param yTilt: tilt of the plane with respect to pyOpticalBench Y axis
+		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
 		:param mediumAfter: Medium after the surface
 		:param mediumBefore: Medium before the surface (optional). Default: "Air"
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "green"
@@ -22,12 +22,12 @@ class ConicSurface(Surface):
 	def __init__(self, center, radius=1.0, RoC=2.0, K=1.0,  xTilt=0.0, yTilt=0.0, mediumAfter="Air", mediumBefore="Air", color="green"):
 		"""
 		Creates a conic surface with the given center and normal with the specified media
-		:param center: Center of the surface with respect to the pyOpticalBench coordinates
+		:param center: Center of the surface with respect to the pyOptiCAD coordinates
 		:param radius: radius of the surface. Default: 1.0
 		:param RoC: Radius of Curvature of the conic. Default: 1.0
 		:param K: Conic Constant. Sphere: K = 0; Oblate ellipsoids: K > 0; Prolate Ellipsoids: −1 < K < 0; Paraboloid: K = −1; Hyperboloids: K < −1
-		:param xTilt: tilt of the surface with respect to pyOpticalBench X axis
-		:param yTilt: tilt of the surface with respect to pyOpticalBench Y axis
+		:param xTilt: tilt of the surface with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the surface with respect to pyOptiCAD Y axis
 		:param mediumAfter: Medium after the surface
 		:param mediumBefore: Medium before the surface (optional). Default: "Air"
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "green"
@@ -59,10 +59,10 @@ class Convex_Paraboloid(Parabolic_Surface):
 		Creates a convex paraboloid surface with the given center and normal with the specified media
 		:param a: surface axis along x direction
 		:param b: surface axis along y direction
-		:param center: Center of the plane with respect to the pyOpticalBench coordinates
+		:param center: Center of the plane with respect to the pyOptiCAD coordinates
 		:param radius: radius of the surface. Default: 1.0
-		:param xTilt: tilt of the plane with respect to pyOpticalBench X axis
-		:param yTilt: tilt of the plane with respect to pyOpticalBench Y axis
+		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
 		:param mediumAfter: Medium after the surface
 		:param mediumBefore: Medium before the surface (optional). Default: "Air"
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "green"
@@ -78,10 +78,10 @@ class Concave_Paraboloid(Parabolic_Surface):
 		Creates a convex paraboloid surface with the given center and normal with the specified media
 		:param a: surface axis along x direction
 		:param b: surface axis along y direction
-		:param center: Center of the plane with respect to the pyOpticalBench coordinates
+		:param center: Center of the plane with respect to the pyOptiCAD coordinates
 		:param radius: radius of the surface. Default: 1.0
-		:param xTilt: tilt of the plane with respect to pyOpticalBench X axis
-		:param yTilt: tilt of the plane with respect to pyOpticalBench Y axis
+		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
 		:param mediumAfter: Medium after the surface
 		:param mediumBefore: Medium before the surface (optional). Default: "Air"
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "green"
@@ -98,10 +98,10 @@ class Convex_Ellipsoid(Elliptic_Surface):
 		Creates a convex ellipsoid surface with the given center and normal with the specified media
 		:param a: surface axis along x direction
 		:param b: surface axis along y direction
-		:param center: Center of the plane with respect to the pyOpticalBench coordinates
+		:param center: Center of the plane with respect to the pyOptiCAD coordinates
 		:param radius: radius of the surface. Default: 1.0
-		:param xTilt: tilt of the plane with respect to pyOpticalBench X axis
-		:param yTilt: tilt of the plane with respect to pyOpticalBench Y axis
+		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
 		:param mediumAfter: Medium after the surface
 		:param mediumBefore: Medium before the surface (optional). Default: "Air"
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "green"
@@ -117,10 +117,10 @@ class Concave_Ellipsoid(Elliptic_Surface):
 		Creates a convex ellipsoid surface with the given center and normal with the specified media
 		:param a: surface axis along x direction
 		:param b: surface axis along y direction
-		:param center: Center of the plane with respect to the pyOpticalBench coordinates
+		:param center: Center of the plane with respect to the pyOptiCAD coordinates
 		:param radius: radius of the surface. Default: 1.0
-		:param xTilt: tilt of the plane with respect to pyOpticalBench X axis
-		:param yTilt: tilt of the plane with respect to pyOpticalBench Y axis
+		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
 		:param mediumAfter: Medium after the surface
 		:param mediumBefore: Medium before the surface (optional). Default: "Air"
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "green"
@@ -136,10 +136,10 @@ class Convex_Hyperboloid(Hyperboloid_Surface):
 		Creates a convex hyperboloid surface with the given center and normal with the specified media
 		:param a: surface axis along x direction
 		:param b: surface axis along y direction
-		:param center: Center of the plane with respect to the pyOpticalBench coordinates
+		:param center: Center of the plane with respect to the pyOptiCAD coordinates
 		:param radius: radius of the surface. Default: 1.0
-		:param xTilt: tilt of the plane with respect to pyOpticalBench X axis
-		:param yTilt: tilt of the plane with respect to pyOpticalBench Y axis
+		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
 		:param mediumAfter: Medium after the surface
 		:param mediumBefore: Medium before the surface (optional). Default: "Air"
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "green"
@@ -155,10 +155,10 @@ class Concave_Hyperboloid(Hyperboloid_Surface):
 		Creates a convex hyperboloid surface with the given center and normal with the specified media
 		:param a: surface axis along x direction
 		:param b: surface axis along y direction
-		:param center: Center of the plane with respect to the pyOpticalBench coordinates
+		:param center: Center of the plane with respect to the pyOptiCAD coordinates
 		:param radius: radius of the surface. Default: 1.0
-		:param xTilt: tilt of the plane with respect to pyOpticalBench X axis
-		:param yTilt: tilt of the plane with respect to pyOpticalBench Y axis
+		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
 		:param mediumAfter: Medium after the surface
 		:param mediumBefore: Medium before the surface (optional). Default: "Air"
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "green"

@@ -7,7 +7,7 @@ class Ray(LineVector):
 		"""
 		Creates a ray which propagates from the rayStart point in the direction given by rayDirection
 		:param startPoint: Starting point of the ray
-		:param rayDirection: direction cosines of the ray or tilts in degrees with respect to pyOpticalBench coordinates
+		:param rayDirection: direction cosines of the ray or tilts in degrees with respect to pyOptiCAD coordinates
 		:param wavelength: wavelength of the ray in μm.
 		:param length: Length of the ray (optional). Default is unit vector
 		:param color: Color to be shown when the ray is being visualized (Optional)
@@ -69,7 +69,7 @@ class Ray(LineVector):
 		# i - (2*(i.n)n) -The second part denotes the component of i in the direction of n
 		reflectedRayDir = self.get_Direction() - (2 * surfaceNormalDirection * np.dot(self.get_Direction(), surfaceNormalDirection))
 		
-		#Transform the point from surface coordinates to pyOpticalBench coordinates
+		#Transform the point from surface coordinates to pyOptiCAD coordinates
 		# intersectionPoint+=surface.center
 		# print("intersectionPoint: ", intersectionPoint)
 		intersectionPoint=surface.transform(intersectionPoint)

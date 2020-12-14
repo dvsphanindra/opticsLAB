@@ -1,0 +1,39 @@
+Type = "project"
+Name = "Polarimeter_Project"
+Description = ""
+Version = "1.0.0"
+Author = ""
+Created = "27-Apr-2020 09.21PM"
+Modified = "27-Apr-2020 09.21PM"
+
+["Source.Source_1"]
+Type = "Source"
+Name = "Source_1"
+Description = ""
+Theta = -45.0
+Mueller = [ 1.0, 0.0, 0.0, 0.0,]
+Jones = [ 1, 1,]
+Color = "Blue"
+Enabled = true
+
+["Polariser.Polariser_1"]
+Type = "Polariser"
+Name = "Polariser_1"
+Description = ""
+Delta = 30.0
+Theta = 45.0
+Mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,],]
+Jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,],]
+Color = "Blue"
+Enabled = true
+
+["Retarder.Retarder_1"]
+Type = "Retarder"
+Name = "Retarder_1"
+Description = ""
+Delta = 30.0
+Theta = -45.0
+Mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,],]
+Jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,],]
+Color = "Blue"
+Enabled = true

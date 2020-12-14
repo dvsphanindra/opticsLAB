@@ -1,0 +1,14 @@
+[project]
+type= "project"
+"type_readonly" = true
+name= "Polarimeter_Project"
+"name@help"="Name of the project"
+description= ""
+"description@help"="User description of the project"
+version= "1.0.0"
+"version@help"="Version number for the project. Default is 1.0.0"
+author=""
+created=""
+"created_readonly"=true
+modified=""
+"modified_readonly"=true

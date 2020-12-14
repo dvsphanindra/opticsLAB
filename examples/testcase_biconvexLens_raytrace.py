@@ -6,17 +6,17 @@ from vispy import scene
 
 import vispy as vispy
 
-from pyOpticalBench.raytrace_vispy.miscellaneous import XYZAxis_Labeled, OpticalAxis
+from miscellaneous import XYZAxis_Labeled, OpticalAxis
 
-from pyOpticalBench.raytrace_vispy.detectors import RectangularScreen
+from detectors import RectangularScreen
 
-from pyOpticalBench.raytrace_vispy.sources import Ray, CircularBeam
+from sources import Ray, CircularBeam
 
 from vispy.color import Color
 
 from matplotlib import pyplot as plt
 
-from pyOpticalBench.raytrace_vispy.opticalPrimitives import Convex_Paraboloid, Concave_Paraboloid
+from opticalPrimitives import Convex_Paraboloid, Concave_Paraboloid
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 

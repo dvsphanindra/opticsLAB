@@ -1,0 +1,77 @@
+type = "Project"
+name = "Polarimeter_Project"
+description = ""
+version = "1.0.0"
+author = ""
+created = '2014-08-17T14:58:57.600623+00:00'
+modified = '2014-08-17T14:58:57.600623+00:00'
+componentsList = ["Source.Source_1", "Polariser.Polariser_1", "Retarder.Retarder_1"]
+
+[[components]]
+type = "Source"
+name = "Source_1"
+description = ""
+theta = 45.0
+radians = true
+lambdaPresent = 6563.0
+mueller = [ [1.0], [0.0], [0.0], [0.0]]
+jones = [[1.0], [1.0]]
+color = "Blue"
+enabled = true
+
+[[components]]
+type = "Polariser"
+name = "Polariser_1"
+description = ""
+theta = 45.0
+radians = false
+mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,]]
+jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,]]
+color = "Blue"
+enabled = true
+
+[[components]]
+type = "Retarder"
+name = "Retarder_1"
+description = "Single retarder"
+delta = 30.0
+theta = 45.0
+lambdaPresent = 6563.0
+lambda0 = 6563.0
+radians = false
+mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,]]
+jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,]]
+color = "Blue"
+enabled = true
+
+[[components]]
+type = "Retarder"
+name = "Retarder_2"
+description = "Double retarder"
+delta = 30.0
+theta = 45.0
+radians = false
+lambdaPresent = 6000.0
+lambda0 = 3000.0
+mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,]]
+jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,]]
+color = "Blue"
+enabled = true
+
+[[components]]
+type = "Polariser"
+name = "Analyser"
+description = ""
+theta = 135.0
+radians = false
+mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,]]
+jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,]]
+color = "Blue"
+enabled = true
+
+[[components]]
+type = "Detector"
+name = "Detector_1"
+description = ""
+color = "Blue"
+enabled = true

@@ -21,7 +21,6 @@ dist/
 
 # Maven
 target/
-dist/
 
 # JetBrains IDE
 .idea/
@@ -52,7 +51,4 @@ Thumbs.db
 *__pycache__/
 
 # Other directories
-raytrace_example/
-usefulGUI/
-raytrace_VTK/
-poincare_tool/
+

@@ -100,9 +100,9 @@ class Surface:
 	def __init__(self, center, x_grid, y_grid, z_grid, xTilt=0.0, yTilt=0.0, color="black"):
 		"""
 		Creates a plane surface with the given center and normal with the specified media
-		:param center: Center of the plane with respect to the pyOpticalBench coordinates
-		:param xTilt: tilt of the plane with respect to pyOpticalBench X axis
-		:param yTilt: tilt of the plane with respect to pyOpticalBench Y axis
+		:param center: Center of the plane with respect to the pyOptiCAD coordinates
+		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "Green"
 		"""
 		self.center = np.array((0, 0, 0))
@@ -182,7 +182,7 @@ class Surface:
 	
 	def translate(self, point):
 		point = np.array(point)
-		# Shift the surface back to origin of the pyOpticalBench as the point is defined wrt this origin
+		# Shift the surface back to origin of the pyOptiCAD as the point is defined wrt this origin
 		if not all(self.center == 0):
 			self.visual.transform.translate(-self.center)
 		self.visual.transform.translate(pos=np.array(point))
@@ -233,6 +233,7 @@ class Plane(Surface):
 		:param ray: Ray incident on the surface
 		:return: Point of intersection of the ray with this surface. Returns None if the ray intersects outside the surface.
 		"""
+		# TODO Verify and confirm to the notation in: https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection
 		dotProduct = np.dot(self.get_chiefNormalDirection(), ray.get_Direction())
 		# Test for parallelism
 		assert dotProduct != 0, "Line and plane do not intersect or the line is contained in the plane"

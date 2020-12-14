@@ -1,0 +1,21 @@
+[source]
+type='Source'
+"type@help"= "Source documentation follows"
+"type_readonly" = true
+name="Source_1"
+"name@help"="Name of the retarder for reference (optional)"
+description=""
+"description@help"="User notes for the Source"
+theta=-45.0
+"theta@help"="Orientation of the Source in degrees. Check radians property to True if you want to enter in radians."
+theta_radians=false
+"theta_radians@help"="Check if theta is in Radians"
+mueller=[1.0,0.0,0.0,0.0]
+"mueller@help"="Mueller matrix of the component"
+jones=[1,1]
+"jones@help"="Jones matrix of the component"
+color="Blue"
+"color@help"="Color used for representation in the GUI"
+"color%display"="namesList"
+enabled=true
+"enabled@help"="Whether the component should be included for calculations. Included if True."

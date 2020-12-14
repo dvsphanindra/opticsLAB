@@ -1,0 +1,11 @@
+[component]
+type='Retarder'
+name="Retarder1"
+description=""
+delta=30.0
+theta=45.0
+radians=false
+#mueller=[[1.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0]]
+#jones=[[1.0,1.0],[1.0,1.0]]
+color="Blue"
+enabled=true
