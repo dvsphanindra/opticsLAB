@@ -5,22 +5,19 @@ systems. vispy library is used for 3D visualization.
 
 ## Description
 
-* This is a Python-based package developed to assist the optical designer in CAD design of optical systems. It is built around [vispy](https://vispy.org/) library. Polarisation analysis can be performed with the Poincare sphere method. This methodology is adopted as it is capable of visual representation of the modification of polarization as the radiation passes through the various components of the system.
-* Screenshots of the performance of the package are located in the `gallery` and examples for quick evaluation of the package are available in `examples` in the repository.
-* The capabilities of this package can be understood from the screenshots in the `gallery`. However, as this package is currently under active development, there are errors in the present version. The immediate target is to arrive at an error-free version where this package can be used for simple raytracing and polarization analysis in optical systems development by writing scripts in Python. In future, sophisticated analysis tools can be developed. A route map for the creating GUI through _marshalling_ so that this package will be useful for designers with no knowledge of Python. Implementation of GUI will follow after the release of version 1.0.
-* Contributions are welcome in various ways such as, not limited to, making the package error-free, enhancing the functionality, development of GUI and so on.
+* Built around [vispy](https://vispy.org/) library, this is a Python-based package developed to assist the optical designer in CAD design of optical systems.
+* Polarisation analysis can be performed with the Poincare sphere method. Poincare formalism is adopted as it is capable of visual representation of polarization vector as the radiation passes through the various components of the system.
+* A quick overview of the capabilities of the package can be obtained from the screenshots located in the `gallery` and examples for quick evaluation of the package are available in `examples` in the repository.
+* The capabilities of this package can be understood from the screenshots in the `gallery`. However, as this package is currently under active development, there can be errors in the code. Therefore, the package may not work as expected. The immediate target is to arrive at an error-free version where this package can be used for simple raytracing and polarization analysis by writing scripts in Python. In future, sophisticated analysis tools can be developed.
+* A route map has been identified for developing GUI for the package based on the concept of _marshalling_. Having a GUI will help the designers with no knowledge of Python in building optical systems. Implementation of GUI will follow after the release of the error-free version.
+* Contributions are welcome in various ways such as, and not limited to, making the package error-free, enhancing the functionality, development of GUI and so on.
 * Current Version is 0.1
 
 ## How do I get set up?
 
-This package has the following major dependencies:
-* `vispy`
-* `pyquaternion`
-* `matplotlib`
-* `numpy`
-* `scipy`
+This package has the following major dependencies: `vispy, pyquaternion, matplotlib, numpy, scipy`
 
-The version information for these packages is provided in the file `requirements.txt`.
+The version information about these packages is provided in the file `requirements.txt`.
 
 ### via pip
 
