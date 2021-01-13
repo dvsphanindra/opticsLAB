@@ -34,9 +34,6 @@ XYZAxis_Labeled(parent=view.scene)
 opticalAxis=OpticalAxis()
 view.add(opticalAxis.get_visual())
 
-# TODO to add arrow
-# arrow = scene.visuals.Arrow(color='white', connect='strip', method='gl', arrow_size=8, parent=view.scene)
-# view.add(arrow)
 """
 parabola = Parabolic_Surface(2, 2, 2, radius=0.5)
 parabola.translate((0,0,0.7))

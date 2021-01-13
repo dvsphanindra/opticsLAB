@@ -1,7 +1,6 @@
 import wx
 
 import wx.propgrid as wxpg
-from vispy.scene import Arrow
 
 import wxPoincareTool_GUI
 
@@ -15,23 +14,19 @@ import os
 
 import numpy as np
 
-from vispy_PoincareCanvas import PoincareSphere_Canvas, PoincareSphere
+from poincareSphere import wxPoincareSphereAxes
 
-from vispy_PolarizationEllipse import wxPolarizationEllipse
+from component_definitions import Generic_Waveplate, Quarter_Waveplate, Half_Waveplate, Linear_Polariser, Project, StateofPolarization, Detector
 
-from component_definitions import Project
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
+from mpl_toolkits.mplot3d import Axes3D
 
 import datetime
 
 import component_definitions as cd
 
 import inspect
-
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib_PolarizationEllipse import wx_PolarizationEllipse
-
 
 class FileDrop(wx.FileDropTarget):
 	def __init__(self, dropTargetWindow):
@@ -62,7 +57,6 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 		self.panel_OpticalBench.SetSizer(sizer1)
 		self.panel_OpticalBench.Layout()
 		sizer1.Fit(self.panel_OpticalBench)
-		self.componentsListViewer.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.componentsListViewer_onDClick)
 		
 		self.fileName = None
 		self.selectedComponent = None # Temporary variable for component under selection
@@ -82,40 +76,30 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 		# Add a (default) page to the Property Grid. Otherwise the widget will not work properly
 		self.propertyGrid_Config.AddPage("Page 1")
 		
-		self.panel_Poincare.canvas = PoincareSphere_Canvas(app="wx", parent=self.panel_Poincare, sizes=self.panel_Poincare.GetSize(), azimuth=90, elevation=10, resizable=True, labels=("Q", "U", "V"))
-		
-		# Interactions with the figure
-		self.panel_Poincare.canvas.events.mouse_press.connect(self.canvas_ImageOnClick)
-		self.panel_Poincare.canvas.events.mouse_release.connect(self.canvas_ImageOnClickRelease)
-		self.panel_Poincare.canvas.events.mouse_move.connect(self.canvas_ImageMouseMotion)
-		self.figure_LeftButtonPress = False
-		self.selected_object=None
-		self.intermediate_SoP = []
-		
-		"""
-		figHeight, figWidth = 3, 3
+		figHeight,figWidth = 3, 3
 		# Create a matplotlib Figure
-		self.figure_PolarizationEllipse = Figure(figsize=(figWidth, figHeight), tight_layout=True)
-		self.canvas_PolarizationEllipse = FigCanvas(self.panel_PolarizationEllipse, wx.ID_ANY,
-		                                  self.figure_PolarizationEllipse)  # Create canvas before plot to enable mouse interaction
-		self.axes_PolarizationEllipse = self.figure_PolarizationEllipse.add_subplot(111, facecolor='Gainsboro', frame_on=True)
-		
-		self.canvas_PolarizationEllipse.draw()
-		self.poincareSphereAxes = wx_PolarizationEllipse(axes=self.axes_PolarizationEllipse, stokes_vector=np.array((1,0,1,0)))
-		
+		self.figure_MainImage = Figure(figsize=(figWidth, figHeight), tight_layout=True)
+		self.canvas_MainImage = FigCanvas(self.panel_Poincare, wx.ID_ANY, self.figure_MainImage) # Create canvas before plot to enable mouse interaction
+		self.axes_MainImage = self.figure_MainImage.add_subplot(111, projection='3d', facecolor='Gainsboro', frame_on=True)
+		self.axes_MainImage.view_init(20,60)
+		self.canvas_MainImage.draw()
+		self.poincareSphereAxes = wxPoincareSphereAxes(axes=self.axes_MainImage)
 		
 		# And add it to the appropriate panel
 		sizer111 = wx.BoxSizer(wx.VERTICAL)
-		sizer111.Add(self. canvas_PolarizationEllipse, 1, wx.ALL | wx.EXPAND, 1)
-		self.panel_PolarizationEllipse.SetSizer(sizer111)
+		sizer111.Add(self.canvas_MainImage, 1, wx.ALL|wx.EXPAND, 1)
+		self.panel_Poincare.SetSizer(sizer111)
 		# To adjust to fit the panel
-		self.panel_PolarizationEllipse.Fit()
-		"""
-		self.panel_PolarizationEllipse.canvas = wxPolarizationEllipse(app="wx", parent=self.panel_PolarizationEllipse,
-		                                                   sizes=self.panel_PolarizationEllipse.GetSize(),  resizable=True)
+		self.panel_Poincare.Fit()
 		
 		# Display the camera coordinates
-		self.SetStatusText("E: {0:3.2f}, A: {1:3.2f}".format(self.panel_Poincare.canvas.view.camera.elevation, self.panel_Poincare.canvas.view.camera.azimuth), 2)
+		self.SetStatusText("E: 20, A: 60", 2)
+		
+		# Interactions with the figure
+		self.figure_MainImage.canvas.mpl_connect("button_press_event", self.axes_ImageOnClick)
+		self.figure_MainImage.canvas.mpl_connect("motion_notify_event", self.axes_ImageMouseMotion)
+		self.figure_MainImage.canvas.mpl_connect('button_release_event', self.axes_ImageOnClickRelease)
+		self.figure_LeftButtonPress = False
 		
 		# TODO to add these later
 		dt = FileDrop(self)
@@ -150,18 +134,10 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 		self.componentsListViewer.updateList(self.project_componentsList[1:])
 
 		self.selectedComponent = self.project_componentsList[0]
-		self.displayComponentProperties(self.selectedComponent)
-		print(self.selectedComponent)
-		for selected_object in self.project_componentsList:
-			if selected_object.get_Type() not in ["Project", "Detector"]:
-				selected_object.draw_visual(self.panel_Poincare.canvas.view.scene)
-		self.poincareSphere=PoincareSphere(radius=1.0, center=(0.0, 0.0, 0.0), parent=self.panel_Poincare.canvas.view.scene, labels=("Q", "U", "V"))
+		self.displayComponent(self.selectedComponent)
 		
-	def displayComponentProperties(self, component):
+	def displayComponent(self, component):
 		# print(vars(component))
-		page = self.propertyGrid_Config.GetPageByName("Page 1")
-		if page is not None:
-			self.propertyGrid_Config.ClearPage(page)
 		for key, value in vars(component).items():
 			if '_' not in key:
 				name = key.capitalize()
@@ -191,13 +167,8 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 					self.propertyGrid_Config.Append(wxpg.ArrayStringProperty(name, key, value=value_str))
 				
 				# Add help strings and read only attributes
-				
-				try:
-					helpString = component.get_HelpString(key)
-					# print(key, helpString)
-					self.propertyGrid_Config.SetPropertyHelpString(key, helpString)
-				except:
-					pass
+				helpString = component.get_HelpString(key)
+				self.propertyGrid_Config.SetPropertyHelpString(key, helpString)
 				if component.get_isReadOnlyParameter(key):
 					self.propertyGrid_Config.SetPropertyReadOnly(key, True)
 					if key=='type' or key=='created' or key=='modified':
@@ -231,23 +202,11 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 		page = self.propertyGrid_Config.GetPageByName("Page 1")
 		if page is not None:
 			self.propertyGrid_Config.ClearPage(page)
-		
+		self.project_componentsList = self.__parseConfig(f_name)
+		print(self.project_componentsList)
+		self.propertyGrid_Config.Append(wxpg.PropertyCategory(list(self.project_componentsList.keys())[0]))
+		self.__updateTable(self.project_componentsList, "project")
 		self.selectedComponent = self.project_componentsList
-		self.intermediate_SoP = []
-		
-		self.project_componentsList = Project.create_from_schema(schema=fileName)
-		print("Project:", self.project_componentsList)
-		
-
-		self.selectedComponent = self.project_componentsList[0]
-		print(self.selectedComponent)
-		# self.propertyGrid_Config.Append(wxpg.PropertyCategory(self.selectedComponent))
-		self.componentsListViewer.updateList(self.project_componentsList[1:])
-		self.displayComponentProperties(self.selectedComponent)
-		
-		for selected_object in self.project_componentsList:
-			if selected_object.get_Type() not in ["Project", "Detector"]:
-				selected_object.draw_visual(self.panel_Poincare.canvas.view.scene)
 		
 		self.selectedComponent_dataChanged = False
 		self.project_dataChanged = False
@@ -257,9 +216,10 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 		if page is not None:
 			self.propertyGrid_Config.ClearPage(page)
 		self.staticText_ProjectFile.SetLabelText("Project File: File not saved")
-		
+		self.selectedComponent = self.templateDict['project']
 		self.project_componentsList = self.selectedComponent
 		self.project_componentsList['Created'] = time.strftime("%d-%b-%Y %I.%M%p")
+		self.__updateTable(self.selectedComponent, "project")
 		
 	def button_SaveProjectAs_OnClick( self, event ):
 		self.saveProjectDataAs() # Get the filename from the user
@@ -284,21 +244,12 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 	
 	def saveProjectData(self):
 		if self.project_componentsList is not None:
-			self.project_componentsList['modified']=time.strftime("%d-%b-%Y %I.%M%p")
+			self.project_componentsList['Modified']=time.strftime("%d-%b-%Y %I.%M%p")
 			with open(self.saveFileName, "w+") as file_object:
 				toml.dump(self.project_componentsList, file_object)
 			self.project_dataChanged = False
 			self.staticText_ProjectFile.SetLabelText("Project File: "+self.saveFileName)
 	
-	def mainFrame_OnSize( self, event ):
-		# print(self.panel_Poincare.GetSize())
-		self.panel_Poincare.canvas.size=self.panel_Poincare.GetSize()
-		self.panel_Poincare.Refresh()
-	
-	def componentsListViewer_onDClick(self, event):
-		selected_object=self.componentsListViewer.GetSelectedObject()
-		self.displayComponentProperties(selected_object)
-		
 	def propertyGrid_Config_OnPropertyChanged(self, event):
 		p = event.GetProperty()
 		if p:
@@ -344,50 +295,27 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 		# TODO to load the choices based on the components in the template dictionary (using dictionary keys)
 		component = self.choice_Components.GetStringSelection()
 		self.selectedComponent = self.available_Components[component]()
-		self.displayComponentProperties(self.selectedComponent)
+		self.displayComponent(self.selectedComponent)
 	
-	def canvas_ImageOnClick(self, event):
+	def axes_ImageOnClick(self, event):
 		if event.button == 1:
+			# self.SetStatusText("({0:3.3f},{1:3.3f})".format(event.xdata, event.ydata), 2)
 			self.figure_LeftButtonPress = True
 		
-	def canvas_ImageMouseMotion(self, event):
+	def axes_ImageMouseMotion(self, event):
 		if self.figure_LeftButtonPress:
-			self.SetStatusText("E: {0:3.2f}, A: {1:3.2f}".format(self.panel_Poincare.canvas.view.camera.elevation, self.panel_Poincare.canvas.view.camera.azimuth), 2)
+			# self.SetStatusText("({0:3.3f},{1:3.3f})".format(event.xdata, event.ydata), 2)
+			self.SetStatusText("E: {0:3.2f}, A: {1:3.2f}".format(self.axes_MainImage.elev, self.axes_MainImage.azim, event.ydata), 2)
 	
-	def canvas_ImageOnClickRelease(self, event):
+	def axes_ImageOnClickRelease(self, event):
 		if event.button == 1:
+			# self.SetStatusText("({0:3.3f},{1:3.3f})".format(event.xdata, event.ydata), 2)
 			self.figure_LeftButtonPress = False
-			# print("Here: ",self.panel_Poincare.canvas.selected_object_name)
-			# print(self.project_componentsList)
-			for component in self.project_componentsList:
-				# print(component.get_Type(), component.get_Name())
-				if component.get_Name() == self.panel_Poincare.canvas.selected_object_name:
-					self.displayComponentProperties(component)
-					if component.get_Type() in "Source":
-						self.panel_PolarizationEllipse.canvas.set_StokesVector(component.get_StokesVector())
-			for component in self.intermediate_SoP:
-				if component.get_Name() == self.panel_Poincare.canvas.selected_object_name:
-					self.panel_PolarizationEllipse.canvas.set_StokesVector(component.get_StokesVector())
 			
 	def button_ResetView_OnClick( self, event ):
-		self.panel_Poincare.canvas.view.camera.azimuth = 90
-		self.panel_Poincare.canvas.view.camera.elevation = 10
-		self.panel_PolarizationEllipse.canvas.view.camera.rect = (-1, -1, 2, 2)
-		self.panel_PolarizationEllipse.canvas.view.camera.zoom(0.75)
-		self.SetStatusText("E: {0:3.2f}, A: {1:3.2f}".format(self.panel_Poincare.canvas.view.camera.elevation, self.panel_Poincare.canvas.view.camera.azimuth), 2)
-		
-	def button_Analyse_OnClick( self, event ):
-		# self.poincareSphere.parent=None # Remove the old poincare sphere
-		incoming_SoP = self.project_componentsList[1]
-		for component in self.project_componentsList:
-			if component.get_Type() not in ["Source", "Detector", "Project"]:
-				SoP=component.analyse(incoming_SoP)
-				SoP.draw_visual(self.panel_Poincare.canvas.view.scene)
-				incoming_SoP=SoP
-				self.intermediate_SoP.append(SoP)
-		
-		# Add the new poincare sphere for viewing it
-		# self.poincareSphere=PoincareSphere(radius=1.0, center=(0.0, 0.0, 0.0), parent=self.panel_Poincare.canvas.view.scene)
+		self.axes_MainImage.view_init(20, 60)
+		self.canvas_MainImage.draw()
+		self.SetStatusText("E: 20, A: 60", 2)
 		
 ###############################################################################
 

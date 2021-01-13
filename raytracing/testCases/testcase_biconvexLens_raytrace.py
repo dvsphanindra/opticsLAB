@@ -12,6 +12,8 @@ from detectors import RectangularScreen
 
 from sources import Ray, CircularBeam
 
+from spotDiagram_matplotlib import SpotDiagram
+
 from vispy.color import Color
 
 from matplotlib import pyplot as plt
@@ -116,28 +118,11 @@ view.add(refractedRay22.get_visual())
 
 view.add(screen.get_Visual())
 
-colorInfo=[]
-for color in colors:
-	colorInfo.append(Color(color).__getattribute__("rgb"))
+SpotDiagram(screenIntersections[:,0],screenIntersections[:,1], marker='+',colors=colors)
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
-plt.scatter(screenIntersections[:,0],screenIntersections[:,1],marker='+',color=colorInfo)
-#Move left y-axis and bottom x-axis to centre, passing through (0,0)
-ax.spines['left'].set_position('center')
-ax.spines['bottom'].set_position('center')
-plt.grid(True)
-
-# Eliminate upper and right axes
-# ax.spines['right'].set_color('none')
-# ax.spines['top'].set_color('none')
-#
-# Show ticks in the left and lower axes only
-# ax.xaxis.set_ticks_position('bottom')
-# ax.yaxis.set_ticks_position('left')
-plt.show()
 #"""
 if __name__ == '__main__':
 	canvas.show()
+	plt.show()
 	if sys.flags.interactive == 0:
 		vispy.app.run()

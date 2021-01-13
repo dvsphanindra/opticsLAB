@@ -25,7 +25,7 @@ ID_CREDITS = 1005
 class mainFrame ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Poincare Sphere Tool", pos = wx.DefaultPosition, size = wx.Size( 1021,843 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Poincare Sphere Tool", pos = wx.DefaultPosition, size = wx.Size( 1159,901 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -92,12 +92,19 @@ class mainFrame ( wx.Frame ):
 
 		bSizer8.Add( self.staticText_ProjectFile, 0, wx.ALL|wx.EXPAND, 5 )
 
-		self.splitterWindow = wx.SplitterWindow( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.SP_3D|wx.SP_3DBORDER|wx.SP_3DSASH )
-		self.splitterWindow.Bind( wx.EVT_IDLE, self.splitterWindowOnIdle )
-		self.splitterWindow.SetMinimumPaneSize( 100 )
+		self.m_panel10 = wx.Panel( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer9 = wx.BoxSizer( wx.HORIZONTAL )
 
-		self.panel_Poincare = wx.Panel( self.splitterWindow, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.panel_Properties = wx.Panel( self.splitterWindow, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
+		self.panel_Poincare = wx.Panel( self.m_panel10, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer81 = wx.BoxSizer( wx.VERTICAL )
+
+
+		self.panel_Poincare.SetSizer( bSizer81 )
+		self.panel_Poincare.Layout()
+		bSizer81.Fit( self.panel_Poincare )
+		bSizer9.Add( self.panel_Poincare, 3, wx.EXPAND |wx.ALL, 5 )
+
+		self.panel_Properties = wx.Panel( self.m_panel10, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SIMPLE|wx.TAB_TRAVERSAL )
 		bSizer3 = wx.BoxSizer( wx.VERTICAL )
 
 		self.propertyGrid_Config = pg.PropertyGridManager(self.panel_Properties, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.propgrid.PGMAN_DEFAULT_STYLE|wx.propgrid.PG_BOLD_MODIFIED|wx.propgrid.PG_DESCRIPTION|wx.propgrid.PG_SPLITTER_AUTO_CENTER|wx.TAB_TRAVERSAL)
@@ -108,70 +115,72 @@ class mainFrame ( wx.Frame ):
 		self.panel_Properties.SetSizer( bSizer3 )
 		self.panel_Properties.Layout()
 		bSizer3.Fit( self.panel_Properties )
-		self.splitterWindow.SplitVertically( self.panel_Poincare, self.panel_Properties, 600 )
-		bSizer8.Add( self.splitterWindow, 3, wx.EXPAND, 5 )
+		bSizer9.Add( self.panel_Properties, 1, wx.EXPAND |wx.ALL, 5 )
+
+
+		self.m_panel10.SetSizer( bSizer9 )
+		self.m_panel10.Layout()
+		bSizer9.Fit( self.m_panel10 )
+		bSizer8.Add( self.m_panel10, 3, wx.EXPAND |wx.ALL, 2 )
 
 		self.panel_Display = wx.Panel( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer5 = wx.BoxSizer( wx.HORIZONTAL )
 
 		self.panel_OpticalBench = wx.Panel( self.panel_Display, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_SUNKEN|wx.TAB_TRAVERSAL )
-		bSizer5.Add( self.panel_OpticalBench, 5, wx.EXPAND |wx.ALL, 2 )
+		bSizer5.Add( self.panel_OpticalBench, 3, wx.EXPAND |wx.ALL, 2 )
 
-		self.panel_List = wx.Panel( self.panel_Display, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		bSizer6 = wx.BoxSizer( wx.VERTICAL )
-
-		checkListBox_ComponentsChoices = []
-		self.checkListBox_Components = wx.CheckListBox( self.panel_List, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, checkListBox_ComponentsChoices, 0 )
-		bSizer6.Add( self.checkListBox_Components, 1, wx.ALL|wx.EXPAND, 2 )
-
-
-		self.panel_List.SetSizer( bSizer6 )
-		self.panel_List.Layout()
-		bSizer6.Fit( self.panel_List )
-		bSizer5.Add( self.panel_List, 1, wx.EXPAND |wx.ALL, 2 )
+		self.panel_PolarizationEllipse = wx.Panel( self.panel_Display, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer5.Add( self.panel_PolarizationEllipse, 1, wx.EXPAND |wx.ALL, 2 )
 
 
 		self.panel_Display.SetSizer( bSizer5 )
 		self.panel_Display.Layout()
 		bSizer5.Fit( self.panel_Display )
-		bSizer8.Add( self.panel_Display, 2, wx.EXPAND |wx.ALL, 5 )
+		bSizer8.Add( self.panel_Display, 2, wx.EXPAND |wx.ALL, 2 )
 
+		self.panel_Controls = wx.Panel( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
 
 
 		bSizer4.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 
 		choice_ComponentsChoices = []
-		self.choice_Components = wx.Choice( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, choice_ComponentsChoices, 0 )
+		self.choice_Components = wx.Choice( self.panel_Controls, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, choice_ComponentsChoices, 0 )
 		self.choice_Components.SetSelection( 0 )
-		bSizer4.Add( self.choice_Components, 0, wx.ALL, 5 )
+		bSizer4.Add( self.choice_Components, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
-		self.button_AddComponent = wx.Button( self.m_panel6, wx.ID_ANY, u"Add Component", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.button_AddComponent = wx.Button( self.panel_Controls, wx.ID_ANY, u"Add Component", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer4.Add( self.button_AddComponent, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
-		self.spinButton_Position = wx.SpinButton( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS|wx.SP_VERTICAL )
+		self.spinButton_Position = wx.SpinButton( self.panel_Controls, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.SP_ARROW_KEYS|wx.SP_VERTICAL )
 		bSizer4.Add( self.spinButton_Position, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
 
 		bSizer4.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 
-		self.button_DuplicateComponent = wx.Button( self.m_panel6, wx.ID_ANY, u"Duplicate Component", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer4.Add( self.button_DuplicateComponent, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-
-		self.button_RemoveComponent = wx.Button( self.m_panel6, wx.ID_ANY, u"Remove Component", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.button_RemoveComponent = wx.Button( self.panel_Controls, wx.ID_ANY, u"Remove Component", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer4.Add( self.button_RemoveComponent, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
 
 		bSizer4.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 
-		self.button_ResetView = wx.Button( self.m_panel6, wx.ID_ANY, u"Reset View", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer4.Add( self.button_ResetView, 0, wx.ALL, 5 )
+		self.button_Analyse = wx.Button( self.panel_Controls, wx.ID_ANY, u"Analyse", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer4.Add( self.button_Analyse, 0, wx.ALL, 5 )
+
+
+		bSizer4.Add( ( 0, 0), 1, wx.EXPAND, 5 )
+
+		self.button_ResetView = wx.Button( self.panel_Controls, wx.ID_ANY, u"Reset View", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer4.Add( self.button_ResetView, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 
 
 		bSizer4.Add( ( 0, 0), 1, wx.EXPAND, 5 )
 
 
-		bSizer8.Add( bSizer4, 0, wx.EXPAND, 5 )
+		self.panel_Controls.SetSizer( bSizer4 )
+		self.panel_Controls.Layout()
+		bSizer4.Fit( self.panel_Controls )
+		bSizer8.Add( self.panel_Controls, 0, wx.ALL|wx.EXPAND, 2 )
 
 
 		self.m_panel6.SetSizer( bSizer8 )
@@ -188,6 +197,7 @@ class mainFrame ( wx.Frame ):
 
 		# Connect Events
 		self.Bind( wx.EVT_CLOSE, self.mainFrame_OnClose )
+		self.Bind( wx.EVT_SIZE, self.mainFrame_OnSize )
 		self.Bind( wx.EVT_MENU, self.button_NewProject_OnClick, id = self.newProject.GetId() )
 		self.Bind( wx.EVT_MENU, self.button_OpenProject_OnClick, id = self.openProject.GetId() )
 		self.Bind( wx.EVT_MENU, self.button_SaveProject_OnClick, id = self.saveProject.GetId() )
@@ -198,13 +208,11 @@ class mainFrame ( wx.Frame ):
 		self.button_SaveProjectAs.Bind( wx.EVT_BUTTON, self.button_SaveProjectAs_OnClick )
 		self.button_SaveProject.Bind( wx.EVT_BUTTON, self.button_SaveProject_OnClick )
 		self.propertyGrid_Config.Bind( pg.EVT_PG_CHANGED, self.propertyGrid_Config_OnPropertyChanged )
-		self.checkListBox_Components.Bind( wx.EVT_LISTBOX, self.checkListBox_Components_OnSelect )
-		self.checkListBox_Components.Bind( wx.EVT_CHECKLISTBOX, self.checkListBox_Components_OnToggle )
 		self.choice_Components.Bind( wx.EVT_CHOICE, self.choice_Components_OnChoice )
 		self.button_AddComponent.Bind( wx.EVT_BUTTON, self.button_AddComponent_OnClick )
 		self.spinButton_Position.Bind( wx.EVT_SPIN_DOWN, self.spinButton_Position_OnSpinDown )
 		self.spinButton_Position.Bind( wx.EVT_SPIN_UP, self.spinButton_Position_OnSpinUp )
-		self.button_DuplicateComponent.Bind( wx.EVT_BUTTON, self.button_DuplicateComponent_OnClick )
+		self.button_Analyse.Bind( wx.EVT_BUTTON, self.button_Analyse_OnClick )
 		self.button_ResetView.Bind( wx.EVT_BUTTON, self.button_ResetView_OnClick )
 
 	def __del__( self ):
@@ -213,6 +221,9 @@ class mainFrame ( wx.Frame ):
 
 	# Virtual event handlers, overide them in your derived class
 	def mainFrame_OnClose( self, event ):
+		event.Skip()
+
+	def mainFrame_OnSize( self, event ):
 		event.Skip()
 
 	def button_NewProject_OnClick( self, event ):
@@ -235,12 +246,6 @@ class mainFrame ( wx.Frame ):
 	def propertyGrid_Config_OnPropertyChanged( self, event ):
 		event.Skip()
 
-	def checkListBox_Components_OnSelect( self, event ):
-		event.Skip()
-
-	def checkListBox_Components_OnToggle( self, event ):
-		event.Skip()
-
 	def choice_Components_OnChoice( self, event ):
 		event.Skip()
 
@@ -253,14 +258,10 @@ class mainFrame ( wx.Frame ):
 	def spinButton_Position_OnSpinUp( self, event ):
 		event.Skip()
 
-	def button_DuplicateComponent_OnClick( self, event ):
+	def button_Analyse_OnClick( self, event ):
 		event.Skip()
 
 	def button_ResetView_OnClick( self, event ):
 		event.Skip()
-
-	def splitterWindowOnIdle( self, event ):
-		self.splitterWindow.SetSashPosition( 600 )
-		self.splitterWindow.Unbind( wx.EVT_IDLE )
 
 

@@ -9,69 +9,71 @@ componentsList = ["Source.Source_1", "Polariser.Polariser_1", "Retarder.Retarder
 
 [[components]]
 type = "Source"
-name = "Source_1"
-description = ""
-theta = 45.0
-radians = true
-lambdaPresent = 6563.0
-mueller = [ [1.0], [0.0], [0.0], [0.0]]
-jones = [[1.0], [1.0]]
-color = "Blue"
-enabled = true
-
-[[components]]
-type = "Polariser"
-name = "Polariser_1"
+name = "SoP1"
 description = ""
 theta = 45.0
 radians = false
-mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,]]
-jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,]]
-color = "Blue"
+lambdaPresent = 6563.0
+mueller = [ [1.0], [0.0], [-1.0], [0.0]]
+jones = [[1.0], [1.0]]
+color = "white"
+enabled = true
+
+
+[[components]]
+type = "Source"
+name = "SoP2"
+description = ""
+theta = 30.0
+radians = false
+lambdaPresent = 6563.0
+mueller = [ [1.0], [0.0], [0.0], [-1.0]]
+jones = [[1.0], [1.0]]
+color = "white"
 enabled = true
 
 [[components]]
 type = "Retarder"
-name = "Retarder_1"
+name = "R1"
 description = "Single retarder"
-delta = 30.0
-theta = 45.0
+delta = 60.0
+theta = 20.0
 lambdaPresent = 6563.0
 lambda0 = 6563.0
 radians = false
 mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,]]
 jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,]]
-color = "Blue"
+color = "green"
 enabled = true
 
 [[components]]
 type = "Retarder"
-name = "Retarder_2"
+name = "R2"
 description = "Double retarder"
-delta = 30.0
-theta = 45.0
+delta = 130.0
+theta = 60.0
 radians = false
 lambdaPresent = 6000.0
 lambda0 = 3000.0
 mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,]]
 jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,]]
-color = "Blue"
+color = "yellow"
 enabled = true
 
 [[components]]
 type = "Polariser"
 name = "Analyser"
 description = ""
-theta = 135.0
+theta = 45.0
 radians = false
 mueller = [ [ 1.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,], [ 0.0, 0.0, 0.0, 0.0,]]
 jones = [ [ 1.0, 1.0,], [ 1.0, 1.0,]]
-color = "Blue"
+color = "blue"
 enabled = true
 
 [[components]]
 type = "Detector"
 name = "Detector_1"
 description = ""
-color = "Blue"
+color = "black"
 enabled = true

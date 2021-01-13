@@ -15,6 +15,12 @@ from component_schema import _ProjectSchema, _GenericWavePlateSchema, _LinearPol
 
 import marshmallow as mm
 
+from vispy import scene
+
+from vispy.scene.visuals import Arrow, LinePlot, GridMesh, Line
+
+from pyquaternion import Quaternion
+
 ####################################################################################################
 class Project:
 	"""
@@ -51,7 +57,15 @@ class Project:
 	# ----------------------------------------------------------------------------
 	def get_HelpString(self, parameter):
 		return self._helpString[parameter]
-		
+	
+	# ----------------------------------------------------------------------------
+	def get_Name(self):
+		return self.name
+	
+	# ----------------------------------------------------------------------------
+	def get_Type(self):
+		return self.type
+	
 	# ----------------------------------------------------------------------------
 	def get_isReadOnlyParameter(self, parameter):
 		return parameter in self._readOnlyParameters
@@ -81,17 +95,18 @@ class _Component:
 		
 		self.__component_schema = None  # Create the corresponding child class schema for loading and validation
 		
-		if kwargs.get("mueller") is not None:
-			self.set_MuellerMatrix(kwargs["mueller"])
-			self.__convert_Mueller2Jones()
-			self.add_ReadOnlyParameters(['theta', 'radians', 'jones'])
-			self.__calculatethetaDelta_from_Mueller(self.mueller)
-		elif kwargs.get("jones") is not None:
-			self.set_JonesMatrix(kwargs["jones"])
-			self.__convert_Jones2Mueller()
-			self.add_ReadOnlyParameters(['mueller', 'theta', 'radians'])
-			self.__calculatethetaDelta_from_Jones(self.jones)
-		else:
+		# if kwargs.get("mueller") is not None:
+		# 	self.set_MuellerMatrix(kwargs["mueller"])
+		# 	self.__convert_Mueller2Jones()
+		# 	self.add_ReadOnlyParameters(['theta', 'radians', 'jones'])
+		# 	self.__calculate_thetaDelta_from_Mueller(self.mueller)
+		# elif kwargs.get("jones") is not None:
+		# 	self.set_JonesMatrix(kwargs["jones"])
+		# 	self.__convert_Jones2Mueller()
+		# 	self.add_ReadOnlyParameters(['mueller', 'theta', 'radians'])
+		# 	self.__calculate_thetaDelta_from_Jones(self.jones)
+		# else:
+		if True:
 			self.theta = float(kwargs.get("theta", 0.0))  # Set to default value of zero if not defined
 			self.add_ReadOnlyParameters(['mueller', 'jones'])
 			
@@ -144,11 +159,11 @@ class _Component:
 		pass
 	
 	# ---------------------------------------------------------------------------
-	def __calculatethetaDelta_from_Mueller(self, mueller):
+	def __calculate_thetaDelta_from_Mueller(self, mueller):
 		pass
 	
 	# ---------------------------------------------------------------------------
-	def __calculatethetaDelta_from_Jones(self, jones):
+	def __calculate_thetaDelta_from_Jones(self, jones):
 		pass
 	
 	# ---------------------------------------------------------------------------
@@ -194,6 +209,14 @@ class _Component:
 		Returns the name of the optical component
 		"""
 		return self.name
+	
+	# ----------------------------------------------------------------------------
+	def get_Color(self):
+		"""
+		To return the color
+		:return: Returns the colour of the optical component
+		"""
+		return self.color
 	
 	# ---------------------------------------------------------------------------
 	def get_Description(self):
@@ -250,10 +273,6 @@ class _Component:
 	def set_JonesMatrix(self, jones):
 		pass
 	
-	# ---------------------------------------------------------------------------
-	def set_OperatingWavelength(self, lambdaPresent):
-		self.lambdaPresent = lambdaPresent
-	
 	# ----------------------------------------------------------------------------
 	def get_HelpString(self, parameter):
 		return self._helpString[parameter]
@@ -270,7 +289,7 @@ class _Component:
 			self._readOnlyParameters.append(parameters)
 
 ########################################################################################################################
-class Source(_Component):
+class StateofPolarization(_Component):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.type = "Source"
@@ -278,10 +297,29 @@ class Source(_Component):
 		self.lambdaPresent = kwargs.get("lambdaPresent", 6563.0)
 		
 		# Set the help string for display in properties box
-		self._helpString.update({"lambdaPresent": "Current operating wavelength"})
+		self._helpString.update({"lambdaPresent": "Current operating wavelength", "intensity":"Intensity component of the Stokes Vector", "polarizationVector":"Polarization Vector"})
+		
+		self.stokes_vector = np.array(kwargs.get("mueller"))
+		self.intensity = self.stokes_vector[0]
+		self.polarizationVector = self.stokes_vector[1:].flatten()
+		
+		self.color = kwargs.get("color")
+		
+		self.parentVisual = None
+		self.labelObject=None
+		self.labelText=None
 		
 		print("----Source created----")
-	
+		
+	def draw_visual(self, parentVisual):
+		self.parentVisual = parentVisual
+		self.labelObject = scene.Text("•", font_size=100, bold=True, color=self.color, parent=self.parentVisual,
+		                              pos=self.polarizationVector.transpose())
+		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentVisual,
+		                            pos=self.polarizationVector.transpose() + (0.15 * self.polarizationVector.transpose()))
+		self.labelObject.interactive = True
+		self.labelText.interactive = True
+		
 	@staticmethod
 	def create_from_schema(schema):
 		component_template = toml.load(schema)
@@ -306,11 +344,28 @@ class Source(_Component):
 		assert np.shape(jones) == (2, 1), "Invalid Jones matrix: {}".format(jones)
 		self.jones = np.array(jones)
 		
+	def get_StokesVector(self):
+		return self.stokes_vector
+		
+	def get_PolarizationVector(self):
+		return self.polarizationVector
+	
+	def get_intensity(self):
+		return self.intensity
+	
+	def get_DegreeOfPolarization(self):
+		return np.sqrt(np.sum(np.square(self.polarizationVector))) / self.stokes_vector[0]
+	
+	# def get_ellipticity(self):
+	# 	return np.tan(np.pi/4-self.Xi)
+	# def get_orientation(self):
+	# 	return self.theta
+		
 ########################################################################################################################
 class Detector(_Component):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
-		self.type = "Source"
+		self.type = "Detector"
 		self.name = kwargs.get("name", "Detector_1")
 		
 		print("----Detector created----")
@@ -378,7 +433,125 @@ class Generic_Waveplate(_Component):
 		                         "lambda0":"Reference wavelength in Å at which the retarder has retardance given by 'Delta'. Default is 6563Å",
 		                         "lambdaPresent": "Current operating wavelength"})
 		
+		self.retarder_Arrow = None
+		self.labelText = None
+		self.retarderDirection = None
+		self.parentVisual = None
+		
+		self.position = np.array((1, 0, 0))
+		
 		print("----Retarder created----")
+		
+	def draw_visual(self, parentVisual):
+		
+		if self.retarder_Arrow is not None:
+			# Delete the existing visuals if they exist
+			self.retarder_Arrow = None
+			self.labelText = None
+			self.retarderDirection = None
+			
+		self.parentVisual=parentVisual
+		arrowStart = (0, 0, 0)
+		arrowDirection = self.position - arrowStart
+		# Derive arrow position from the point and direction of arrow from the tangent (or direction cosine) of the line at the point
+		arrowHead = np.array([(0, 0, 0, 1, 0, 0)])  # Arrow direction, position
+		self.retarder_Arrow = Arrow(pos=np.array([(0, 0, 0), self.position]), color=self.color, method='gl', width=5.,
+		                            arrows=arrowHead,
+		                            arrow_type="angle_30", arrow_size=5.0, arrow_color=self.color, antialias=True,
+		                            parent=self.parentVisual)
+		self.retarder_Arrow.transform = scene.transforms.MatrixTransform()
+		self.retarder_Arrow.interactive = True
+		
+		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentVisual,
+		                            pos=self.position + (0.15 * arrowDirection))
+		self.labelText.transform = scene.transforms.MatrixTransform()
+		self.labelText.interactive = True
+		
+		self.retarderDirection = np.array([1, 0, 0])
+		# Rotate the retarder visual after creating the arrow and head from the origin to the proper position
+		self.__rotate(2 * np.rad2deg(self.theta))
+		
+		self.__create_quaternion(self.retarderDirection, self.delta)
+	
+	def __create_quaternion(self, direction, angle):
+		self.quaternion = Quaternion(axis=direction, degrees=2 * angle)
+	
+	def __rotate(self, angle):
+		self.retarder_Arrow.transform.rotate(angle, (0, 0, 1))  # Rotate on the XY plane (about Z axis)
+		self.labelText.transform.rotate(angle, (0, 0, 1))
+		q = Quaternion(axis=(0, 0, 1), degrees=angle)
+		self.retarderDirection = q.rotate(np.array(self.retarderDirection))  # Update the rotation quaternion direction
+	
+	def analyse(self, incoming_SoP):
+		"""
+		Rotates the incoming polarization to outgoing polarization using quaternions and displays the same on Poincare sphere
+		:param incoming_SoP: incoming state of polarization
+		:return: resulting state of polarization after retardation
+		"""
+		result = self.quaternion.rotate(incoming_SoP.get_PolarizationVector())  # Calculate the result SoP by rotating the vector using quaternion
+		result_SoP = StateofPolarization(mueller=np.append(np.array([1, ]), result), parent=self.parentVisual, color=incoming_SoP.get_Color(),
+		                 name=incoming_SoP.get_Name() + 'x' + self.name)
+		
+		if self.parentVisual is not None:
+			self.__draw_retarderEffect(incoming_SoP)
+		
+		return result_SoP
+	
+	def __draw_retarderEffect(self, incoming_SoP):
+		# Find the plane which is normal to the retardance vector and also in which the input SoP lies. Result SoP also lies in the same plane
+		# https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection
+		dotProduct = np.dot(self.retarderDirection, self.retarderDirection)
+		
+		w = np.array((0, 0, 0))  # Line start point
+		si = np.dot(self.retarderDirection, incoming_SoP.get_PolarizationVector()) / dotProduct
+		center = w + si * self.retarderDirection  # Find the center of rotation which is located on this plane
+		
+		# To draw the arc of rotation of the retarder
+		r = np.sqrt(np.sum((center - incoming_SoP.get_PolarizationVector()) ** 2))  # Radius is the distance from center to the incoming SoP
+		
+		# Find the line of intersection of the plane (Normal: retarder direction vector) and the XY plane (Normal: z-axis)
+		# https://en.wikipedia.org/wiki/Intersection_curve#Intersection_line_of_two_planes
+		direction_of_intersection = np.cross(self.retarderDirection, np.array((0, 0, 1)))
+		arcStart = center + (-r) * direction_of_intersection  # Find the point towards the right side of the center (-r)
+		circle_StartVector = arcStart - center
+		
+		# Find the SoP Vector to determine the starting angle of the arc
+		SoP_vector = incoming_SoP.get_PolarizationVector() - center
+		arc_StartAngle = np.arccos(
+			np.dot(SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector)))
+		if SoP_vector[2] < 0:  # If the SoP is in the lower hemisphere,
+			arc_StartAngle = 2 * np.pi - arc_StartAngle  # determine the outer angle between the vectors
+		
+		# Debug Info
+		# print("center=",self.retarderDirection, si, center)
+		# scene.Text("◊", font_size=70, bold=True, color=self.color, parent=self.parentVisual, pos=center)  # To display the center point
+		# Line(np.array([center, arcStart]), connect='strip', method='gl', width=2, color=self.color, parent=self.parentVisual)
+		# print("line=", direction_of_intersection)
+		# print("Angle=", arcStart, circle_StartVector, SoP_vector, np.rad2deg(arc_StartAngle))#, np.rad2deg(arcAngle))
+		
+		# Draw the arc using the above data
+		t = np.linspace(arc_StartAngle, arc_StartAngle + np.deg2rad(2 * self.delta), 100)
+		y = r * np.cos(t)
+		z = r * np.sin(t)
+		x = np.zeros(y.size)
+		arc = LinePlot((x, y, z), width=15, color=self.color, parent=self.parentVisual)
+		arc.transform = scene.transforms.MatrixTransform()
+		arc.transform.rotate(2 * np.rad2deg(self.theta), (0, 0, 1))
+		arc.transform.translate(center)
+		
+		# Draw arrow head at the center (51st point) of the above arc to indicate the direction of rotation
+		arrowHead = np.array([(x[50], y[50], z[50], x[51], y[51],
+		                       z[51])])  # Arrow direction, position -Direction determined by the 50th point
+		arrowSize = 5.
+		if self.delta < np.deg2rad(20):
+			arrowSize = 3.
+		# The pos parameter is simply a line of short length same as that of the arrowhead
+		arrow = Arrow(pos=np.array([(x[50], y[50], z[50]), (x[51], y[51], z[51])]), color=self.color, method='gl',
+		              width=arrowSize, arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0, arrow_color=self.color,
+		              antialias=True, parent=self.parentVisual)
+		arrow.transform = scene.transforms.MatrixTransform()
+		arrow.transform.rotate(2 * np.rad2deg(self.theta), (0, 0, 1))
+		arrow.transform.translate(center)
 	
 	@staticmethod
 	def create_from_schema(schema):
@@ -463,6 +636,15 @@ class Generic_Waveplate(_Component):
 		assert np.shape(jones) == (2, 2), "Invalid Jones matrix: {}".format(jones)
 		self.jones = np.array(jones)
 		
+	# ---------------------------------------------------------------------------
+	def set_OperatingWavelength(self, lambdaPresent):
+		self.lambdaPresent = lambdaPresent
+		self.__wavelength_ratio = self.lambda0 / self.lambdaPresent
+		self.__calculate_MuellerMatrix()
+		# self.__calculate_JonesMatrix()
+		
+		self.draw_visual()
+		
 ###############################################################################
 class Linear_Polariser(_Component):
 	"""
@@ -486,6 +668,71 @@ class Linear_Polariser(_Component):
 		self.description = kwargs.get("description")
 		
 		print("----Polariser created----")
+	
+		self.parentVisual = None
+		
+		self.position = np.array((1, 0, 0))
+		
+	def draw_visual(self, parentVisual):
+		self.parentVisual = parentVisual
+		self.arrowStart = (0, 0, 0)
+		self.arrowDirection = self.position - self.arrowStart
+		# Derive arrow position from the point and direction of arrow from the tangent (or direction cosine) of the line at the point
+		arrowHead = np.array([(0, 0, 0, 1, 0, 0)])  # Arrow direction, position
+		self.polariser_Arrow = Arrow(pos=np.array([(0, 0, 0), self.position]), color=self.color, method='gl', width=5.,
+		                             arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0, arrow_color=self.color,
+		                             antialias=True, parent=self.parentVisual)
+		self.polariser_Arrow.transform = scene.transforms.MatrixTransform()
+		self.polariser_Arrow.interactive = True
+		
+		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentVisual,
+		                            pos=self.position + (0.15 * self.arrowDirection))
+		self.labelText.transform = scene.transforms.MatrixTransform()
+		self.labelText.interactive = True
+		
+		self.polariserDirection = np.array([1, 0, 0])
+		# Rotate the polariser visual after creating the arrow and head from the origin to the proper position
+		self.__rotate(2 * np.rad2deg(self.theta))
+	
+	def __rotate(self, angle):
+		self.polariser_Arrow.transform.rotate(angle, (0, 0, 1))  # Rotate on the XY plane (about Z axis)
+		self.labelText.transform.rotate(angle, (0, 0, 1))
+		q = Quaternion(axis=(0, 0, 1), degrees=angle)
+		self.polariserDirection = q.rotate(np.array(self.polariserDirection))  # Update the rotation quaternion direction
+	
+	def analyse(self, incoming_SoP):
+		"""
+		Polarises the incoming polarization to outgoing polarization and displays the same on Poincare sphere
+		:param incoming_SoP: incoming state of polarization
+		:return: resulting state of polarization after polarisation
+		"""
+		# gamma is the angle between the orientation of the polariser and orientation of the incoming SoP
+		gamma = np.arccos(np.dot(self.polariserDirection, incoming_SoP.get_PolarizationVector()))
+		two_psi = np.arctan(self.polariserDirection[1] / self.polariserDirection[0])
+		if np.abs(self.theta) > 45:
+			two_psi += np.pi
+		I = np.cos(gamma / 2) ** 2
+		# From the basic relations for S0, S1, S2, S3 given in https://en.wikipedia.org/wiki/Stokes_parameters
+		# DoP=1, two_Xi=0, the relations simplify
+		result_polarization_vector = np.array((I * np.cos(two_psi), I * np.sin(two_psi), 0))
+		result_SoP = StateofPolarization(mueller=np.append([I], result_polarization_vector), parent=self.parentVisual, color=incoming_SoP.get_Color(),
+		                 name=incoming_SoP.get_Name() + '+' + self.name)
+		# print("In Polariser: gamma, 2Psi, result=",np.rad2deg([gamma, two_psi]), result_polarization_vector)
+		
+		if self.parentVisual is not None:
+			self.__draw_polariserEffect(incoming_SoP, result_polarization_vector)
+		
+		return result_SoP
+	
+	def __draw_polariserEffect(self, incoming_SoP, result_polarization_vector):
+		""" Draw the transformation visual """
+		# Calculate mid point for drawing the arrow head
+		mid_point = (incoming_SoP.get_PolarizationVector() + result_polarization_vector) / 2
+		arrowHead = np.array([np.append(incoming_SoP.get_PolarizationVector(), mid_point)])  # Arrow direction, position
+		
+		Arrow(pos=np.array([incoming_SoP.get_PolarizationVector(), result_polarization_vector]), color=self.color,
+		      method='gl', width=5., arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0,
+		      arrow_color=self.color, antialias=True, parent=self.parentVisual)
 	
 	@staticmethod
 	def create_from_schema(schema):
