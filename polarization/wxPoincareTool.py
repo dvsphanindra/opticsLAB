@@ -161,7 +161,7 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 		# print(vars(component))
 		page = self.propertyGrid_Config.GetPageByName("Page 1")
 		if page is not None:
-			self.propertyGrid_Config.ClearPage(page)
+			self.propertyGrid_Config.ClearPage(page)    
 		for key, value in vars(component).items():
 			if '_' not in key:
 				name = key.capitalize()
@@ -387,7 +387,7 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 				self.intermediate_SoP.append(SoP)
 		
 		# Add the new poincare sphere for viewing it
-		# self.poincareSphere=PoincareSphere(radius=1.0, center=(0.0, 0.0, 0.0), parent=self.panel_Poincare.canvas.view.scene)
+		self.poincareSphere.update_sphere()
 		
 ###############################################################################
 

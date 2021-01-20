@@ -12,11 +12,13 @@ from vispy.scene.visuals import GridMesh
 
 from vispy.color import Color
 
-from polarization_sources import SoP
+# from polarization_sources import SoP
+#
+# from polarization_components import Retarder, Polariser
 
-from polarization_components import Retarder, Polariser
+from component_definitions import Generic_Waveplate, Linear_Polariser, StateofPolarization
 
-np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
+np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.3f}'.format})
 
 # •◊×
 
@@ -118,6 +120,8 @@ class PoincareSphere:
 		Creates the data of a sphere whose center, and radius are given as inputs
 		"""
 		self.parent=parent
+		self.color = color
+		self.axesLabels = labels
 		# Generate the grid in spherical coordinates
 		# Names of the spherical coordinate axes according to ISO convention
 		theta = np.linspace(0, np.pi, 50)
@@ -126,51 +130,56 @@ class PoincareSphere:
 		RHO = radius  # Size of the sphere
 		
 		# Convert to cartesian coordinates
-		x_grid = (RHO * np.sin(THETA) * np.cos(PHI)) + center[0]
-		y_grid = (RHO * np.sin(THETA) * np.sin(PHI)) + center[1]
-		z_grid = (RHO * np.cos(THETA)) + center[2]
+		self.x_grid = (RHO * np.sin(THETA) * np.cos(PHI)) + center[0]
+		self.y_grid = (RHO * np.sin(THETA) * np.sin(PHI)) + center[1]
+		self.z_grid = (RHO * np.cos(THETA)) + center[2]
 		
-		Coordinate_Axes(parent=self.parent, labels=labels)
+		self.axes = None
+		self.mesh = None
 		
-		mesh=GridMesh(x_grid, y_grid, z_grid, parent=self.parent, color=color)
-		mesh.ambient_light_color=Color((0.3, 0.3, 1, 0.1))
-		mesh.light_dir=np.array((0,0,1))
-		mesh.shading='flat'
+		self.update_sphere()
+		
+	def update_sphere(self):
+		if self.axes is not None:
+			self.axes.parent = None
+			self.mesh.parent = None
+			
+		self.axes=Coordinate_Axes(parent=self.parent, labels=self.axesLabels)
+		
+		self.mesh=GridMesh(self.x_grid, self.y_grid, self.z_grid, parent=self.parent, color=self.color)
+		self.mesh.ambient_light_color=Color((0.3, 0.3, 1, 0.1))
+		self.mesh.light_dir=np.array((0,0,1))
+		self.mesh.shading='flat'
 		
 if __name__ == '__main__':
 	canvas = scene.SceneCanvas(keys='interactive')
 	view = canvas.central_widget.add_view()
 	view.camera = scene.TurntableCamera(up='z', fov=30)
 	
-	sphere = PoincareSphere(parent=view.scene)
+	# sphere = PoincareSphere(parent=view.scene)
 	
 	canvas.bgcolor = Color(color="lightsteelblue", alpha=0.5)
-	# retarder1 = Retarder(delta=40, theta=-60, parent=view.scene, color='teal', name='R1')
+	# retarder1 = Retarder(delta=40, theta=-60, parent=view.scene, color='teal', name='R1', draw=True)
 	# retarder1 = Retarder(delta=40, theta=20, parent=view.scene, color='teal', name='R1', draw=True)
-	retarder1 = Retarder(delta=35, theta=60, parent=view.scene, color='teal', name='R1')
+	# retarder1 = Retarder(delta=35, theta=60, parent=view.scene, color='teal', name='R1', draw=True)
 	
-	sop1=SoP(np.array((1,0,-1,0)), parent=view.scene, color='white', name="SoP1")
-	sop2=retarder1.retard(sop1, draw=True)
+	retarder1 = Generic_Waveplate(name="R1", delta=45, theta=20, color='indigo', parent=view.scene)
+	retarder2 = Generic_Waveplate(name="R2", delta=30, theta=60, color='magenta', parent=view.scene)
+	retarder3 = Generic_Waveplate(name="R3", delta=100, theta=40, color='green', parent=view.scene)
+	polariser1 = Linear_Polariser(name="P1", theta=80, color='yellow', parent=view.scene)
+	
+	sop1=StateofPolarization(mueller=np.array((1,0,0,1)), parent=view.scene, color='white', name="SoP1")
+	
+	sop2=retarder1.analyse(sop1)
+	print("SoP2=",sop2.get_StokesVector())
+	sop3=retarder2.analyse(sop2)
+	sop4=retarder3.analyse(sop3)
+	
+	out_SoP=polariser1.analyse(sop4)
 
-	retarder2 = Retarder(delta=40, theta=30, parent=view.scene, color='indigo', name='R2', draw=True)
-	sop3=retarder2.retard(sop2,draw=True)
-
-	retarder3 = Retarder(delta=10, theta=-40, parent=view.scene, color='magenta', name='R3', draw=True)
-	sop4=retarder3.retard(sop3,draw=True)
-
-	polariser1=Polariser(20, parent=view.scene, color='yellow', name="P1", draw=True)
-	out_SoP=polariser1.polarise(sop4,draw=True)
 	print("SoP out= ", out_SoP.stokes_vector, "DoP= ",out_SoP.get_DegreeOfPolarization())
-	#
-	# retarder1 = Retarder(delta=60, theta=20, parent=view.scene, color='green', name='R1', draw=True)
-	# sop2 = retarder1.retard(sop1, draw=True)
-	#
-	# retarder2 = Retarder(delta=130, theta=60, parent=view.scene, color='yellow', name='R2', draw=True)
-	# sop3=retarder2.retard(sop2,draw=True)
-	#
-	# polariser1=Polariser(35, parent=view.scene, color='blue', name="P1", draw=True)
-	# out_SoP=polariser1.polarise(sop3,draw=True)
-	print("SoP out= ", out_SoP.stokes_vector, "DoP= ",out_SoP.get_DegreeOfPolarization())
+	
+	
 
 	sphere = PoincareSphere(parent=view.scene)
 	canvas.show()

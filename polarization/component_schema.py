@@ -104,8 +104,8 @@ class _SourceSchema(Schema):
 	                           default="Source")  # This field will be ignored by the component during instantiation
 	name = fields.Str(required=True, error_messages={'required': "Please give an appropriate name for the component"})
 	description = fields.Str()
-	theta = fields.Float(required=True)
-	radians = fields.Bool(default=False)
+	# theta = fields.Float(required=True)
+	# radians = fields.Bool(default=False)
 	lambdaPresent = fields.Float(default=6563.0)
 	mueller = fields.List(fields.List(fields.Float()))
 	jones = fields.List(fields.List(fields.Float()))
@@ -120,12 +120,12 @@ class _SourceSchema(Schema):
 	# Additional validations other than those given above Raw definition
 	@pre_load
 	def validate_data(self, data, **kwargs):
-		# Verify theta
-		if data["radians"]:
-			assert  0 < data["theta"] < 2*np.pi, "Theta not in range: [0, 2π] for " + data["name"]
-		else:
-			assert 0 < data["theta"] < 360, "Theta not in range: [0, 360] for " + data["name"]
-		
+		# # Verify theta
+		# if data["radians"]:
+		# 	assert  0 < data["theta"] < 2*np.pi, "Theta not in range: [0, 2π] for " + data["name"]
+		# else:
+		# 	assert 0 < data["theta"] < 360, "Theta not in range: [0, 360] for " + data["name"]
+		#
 		# Verify stokes vector
 		stokes_vector = data["mueller"]
 		intensity = stokes_vector[0]

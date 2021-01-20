@@ -15,6 +15,7 @@ class Retarder:
 		self.name = name
 		self.color = color
 		self.parent = parent
+		self.quaternion = None
 		
 		self.position = np.array((1, 0, 0))
 		

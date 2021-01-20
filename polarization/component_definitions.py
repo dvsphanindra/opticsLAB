@@ -89,7 +89,7 @@ class _Component:
 		self.mueller = []  # Mueller matrix
 		self.jones = []  # Jones matrix
 		self._readOnlyParameters = ['type']  # List of Parameters user cannot change but displayed in the properties
-		self.color = kwargs.get("color", "Blue")  # set to default color of Blue if not defined
+		self.color = kwargs.get("color", "blue")  # set to default color of Blue if not defined
 		
 		self.radians = kwargs.get("radians", False)  # Set to False if not defined
 		
@@ -295,6 +295,7 @@ class StateofPolarization(_Component):
 		self.type = "Source"
 		self.name = kwargs.get("name", "Source_1")
 		self.lambdaPresent = kwargs.get("lambdaPresent", 6563.0)
+		self.parentVisual = kwargs.get('parent', None)
 		
 		# Set the help string for display in properties box
 		self._helpString.update({"lambdaPresent": "Current operating wavelength", "intensity":"Intensity component of the Stokes Vector", "polarizationVector":"Polarization Vector"})
@@ -303,9 +304,13 @@ class StateofPolarization(_Component):
 		self.intensity = self.stokes_vector[0]
 		self.polarizationVector = self.stokes_vector[1:].flatten()
 		
+		self.validate_StokesVector()
+		
 		self.color = kwargs.get("color")
 		
-		self.parentVisual = None
+		if self.parentVisual is not None:
+			self.draw_visual(self.parentVisual)
+			
 		self.labelObject=None
 		self.labelText=None
 		
@@ -332,6 +337,14 @@ class StateofPolarization(_Component):
 	def validate(instance):
 		component_schema = _SourceSchema(many=False, unknown=mm.EXCLUDE)
 		print(component_schema.validate(instance))
+	
+	def validate_StokesVector(self):
+		squareSum=np.sqrt(np.sum(np.square(self.polarizationVector)))
+		if squareSum > self.stokes_vector[0]:
+			if squareSum < 1.0001: # Allow for numpy precision in calculations
+				self.polarizationVector = np.round(self.polarizationVector,13)
+			else:
+				raise AssertionError("Irregular Stokes Vector: S0, vector, square, sum of square: {0}, {1}, {2}, {3}".format(self.stokes_vector[0], self.polarizationVector, np.square(self.polarizationVector), np.sum(np.square(self.polarizationVector))))
 		
 	# ---------------------------------------------------------------------------
 	def set_MuellerMatrix(self, mueller):
@@ -428,6 +441,8 @@ class Generic_Waveplate(_Component):
 		
 		self.__wavelength_ratio = self.lambda0 / self.lambdaPresent
 		
+		self.parentVisual = kwargs.get("parent", None) # Visual will not be drawn in parent object is not passed
+		
 		# Set the help string for display in properties box
 		self._helpString.update({"delta": "Retardance in degrees. Check radians property to True if you want to enter in radians.",
 		                         "lambda0":"Reference wavelength in Å at which the retarder has retardance given by 'Delta'. Default is 6563Å",
@@ -435,10 +450,14 @@ class Generic_Waveplate(_Component):
 		
 		self.retarder_Arrow = None
 		self.labelText = None
-		self.retarderDirection = None
-		self.parentVisual = None
+		self.retarderDirection = np.array([1, 0, 0])
 		
 		self.position = np.array((1, 0, 0))
+		
+		self.__create_quaternion(self.delta, self.theta)
+		
+		if self.parentVisual is not None:
+			self.draw_visual(parentVisual=self.parentVisual)
 		
 		print("----Retarder created----")
 		
@@ -448,7 +467,7 @@ class Generic_Waveplate(_Component):
 			# Delete the existing visuals if they exist
 			self.retarder_Arrow = None
 			self.labelText = None
-			self.retarderDirection = None
+			self.retarderDirection = np.array([1, 0, 0])
 			
 		self.parentVisual=parentVisual
 		arrowStart = (0, 0, 0)
@@ -467,20 +486,21 @@ class Generic_Waveplate(_Component):
 		self.labelText.transform = scene.transforms.MatrixTransform()
 		self.labelText.interactive = True
 		
-		self.retarderDirection = np.array([1, 0, 0])
+		
 		# Rotate the retarder visual after creating the arrow and head from the origin to the proper position
 		self.__rotate(2 * np.rad2deg(self.theta))
 		
-		self.__create_quaternion(self.retarderDirection, self.delta)
 	
-	def __create_quaternion(self, direction, angle):
-		self.quaternion = Quaternion(axis=direction, degrees=2 * angle)
-	
+	def __create_quaternion(self, delta, theta):
+		q = Quaternion(axis=(0, 0, 1), radians=2*theta) # Theta is automatically converted to radians in the component super class
+		self.retarderDirection = q.rotate(np.array(self.retarderDirection))  # Update the rotation quaternion direction
+		
+		self.quaternion = Quaternion(axis=self.retarderDirection, degrees=2 * delta)
+		
 	def __rotate(self, angle):
 		self.retarder_Arrow.transform.rotate(angle, (0, 0, 1))  # Rotate on the XY plane (about Z axis)
 		self.labelText.transform.rotate(angle, (0, 0, 1))
-		q = Quaternion(axis=(0, 0, 1), degrees=angle)
-		self.retarderDirection = q.rotate(np.array(self.retarderDirection))  # Update the rotation quaternion direction
+		
 	
 	def analyse(self, incoming_SoP):
 		"""
@@ -517,8 +537,12 @@ class Generic_Waveplate(_Component):
 		
 		# Find the SoP Vector to determine the starting angle of the arc
 		SoP_vector = incoming_SoP.get_PolarizationVector() - center
-		arc_StartAngle = np.arccos(
-			np.dot(SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector)))
+		print("SoP=",SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector))
+		# print("[1],[2]=", np.dot(SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector)))
+		dot = np.dot(SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector))
+		if np.abs(dot) < 1.0001: # Allow for numpy precision in calculations
+			dot=np.round(dot,4)
+		arc_StartAngle = np.arccos(dot)
 		if SoP_vector[2] < 0:  # If the SoP is in the lower hemisphere,
 			arc_StartAngle = 2 * np.pi - arc_StartAngle  # determine the outer angle between the vectors
 		
@@ -528,6 +552,10 @@ class Generic_Waveplate(_Component):
 		# Line(np.array([center, arcStart]), connect='strip', method='gl', width=2, color=self.color, parent=self.parentVisual)
 		# print("line=", direction_of_intersection)
 		# print("Angle=", arcStart, circle_StartVector, SoP_vector, np.rad2deg(arc_StartAngle))#, np.rad2deg(arcAngle))
+		
+		# Draw arc using quaternion
+		# for angle in np.linspace(0, self.delta):
+		# 	self.quaternion.rotate(incoming_SoP)
 		
 		# Draw the arc using the above data
 		t = np.linspace(arc_StartAngle, arc_StartAngle + np.deg2rad(2 * self.delta), 100)
@@ -542,9 +570,8 @@ class Generic_Waveplate(_Component):
 		# Draw arrow head at the center (51st point) of the above arc to indicate the direction of rotation
 		arrowHead = np.array([(x[50], y[50], z[50], x[51], y[51],
 		                       z[51])])  # Arrow direction, position -Direction determined by the 50th point
-		arrowSize = 5.
-		if self.delta < np.deg2rad(20):
-			arrowSize = 3.
+		
+		arrowSize = 5. if r > 0.2 else 3.
 		# The pos parameter is simply a line of short length same as that of the arrowhead
 		arrow = Arrow(pos=np.array([(x[50], y[50], z[50]), (x[51], y[51], z[51])]), color=self.color, method='gl',
 		              width=arrowSize, arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0, arrow_color=self.color,
@@ -666,12 +693,18 @@ class Linear_Polariser(_Component):
 		self.type = "Polariser"
 		self.name = kwargs.get("name", "PolariserName")
 		self.description = kwargs.get("description")
+		self.parentVisual = kwargs.get("parent", None)
 		
-		print("----Polariser created----")
-	
-		self.parentVisual = None
+		self.polariserDirection = np.array([1, 0, 0])
 		
 		self.position = np.array((1, 0, 0))
+		
+		print("----Polariser created----")
+		
+		if self.parentVisual is not None:
+			self.draw_visual(self.parentVisual)
+
+		
 		
 	def draw_visual(self, parentVisual):
 		self.parentVisual = parentVisual
@@ -690,7 +723,7 @@ class Linear_Polariser(_Component):
 		self.labelText.transform = scene.transforms.MatrixTransform()
 		self.labelText.interactive = True
 		
-		self.polariserDirection = np.array([1, 0, 0])
+		
 		# Rotate the polariser visual after creating the arrow and head from the origin to the proper position
 		self.__rotate(2 * np.rad2deg(self.theta))
 	
