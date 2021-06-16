@@ -1,9 +1,8 @@
 import wx
 
 import wx.propgrid as wxpg
-from vispy.scene import Arrow
 
-import wxPoincareTool_GUI
+import wxPoincareVisual_GUI
 
 from objectListView import objectList
 
@@ -19,19 +18,13 @@ from vispy_PoincareCanvas import PoincareSphere_Canvas, PoincareSphere
 
 from vispy_PolarizationEllipse import wxPolarizationEllipse
 
-from component_definitions import Project
+from components.project import Project
 
 import datetime
 
-import component_definitions as cd
+import components as cd
 
 import inspect
-
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigCanvas
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib_PolarizationEllipse import wx_PolarizationEllipse
-
 
 class FileDrop(wx.FileDropTarget):
 	def __init__(self, dropTargetWindow):
@@ -46,11 +39,11 @@ class FileDrop(wx.FileDropTarget):
 
 ###############################################################################
 
-class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
+class wxPoincareTool(wxPoincareVisual_GUI.mainFrame):
 	""" Sub Class the GUI created with wxFormBuilder and extend the functionality """
 	
 	def __init__(self, parent):
-		wxPoincareTool_GUI.mainFrame.__init__(self, parent)
+		wxPoincareVisual_GUI.mainFrame.__init__(self, parent)
 		self.fileName = None
 		self.selectedComponent = None
 		self.saveFileName = None
@@ -92,25 +85,6 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 		self.selected_object=None
 		self.intermediate_SoP = []
 		
-		"""
-		figHeight, figWidth = 3, 3
-		# Create a matplotlib Figure
-		self.figure_PolarizationEllipse = Figure(figsize=(figWidth, figHeight), tight_layout=True)
-		self.canvas_PolarizationEllipse = FigCanvas(self.panel_PolarizationEllipse, wx.ID_ANY,
-		                                  self.figure_PolarizationEllipse)  # Create canvas before plot to enable mouse interaction
-		self.axes_PolarizationEllipse = self.figure_PolarizationEllipse.add_subplot(111, facecolor='Gainsboro', frame_on=True)
-		
-		self.canvas_PolarizationEllipse.draw()
-		self.poincareSphereAxes = wx_PolarizationEllipse(axes=self.axes_PolarizationEllipse, stokes_vector=np.array((1,0,1,0)))
-		
-		
-		# And add it to the appropriate panel
-		sizer111 = wx.BoxSizer(wx.VERTICAL)
-		sizer111.Add(self. canvas_PolarizationEllipse, 1, wx.ALL | wx.EXPAND, 1)
-		self.panel_PolarizationEllipse.SetSizer(sizer111)
-		# To adjust to fit the panel
-		self.panel_PolarizationEllipse.Fit()
-		"""
 		self.panel_PolarizationEllipse.canvas = wxPolarizationEllipse(app="wx", parent=self.panel_PolarizationEllipse,
 		                                                   sizes=self.panel_PolarizationEllipse.GetSize(),  resizable=True)
 		
@@ -245,6 +219,7 @@ class wxPoincareTool(wxPoincareTool_GUI.mainFrame):
 		self.componentsListViewer.updateList(self.project_componentsList[1:])
 		self.displayComponentProperties(self.selectedComponent)
 		
+		# TODO: Delete the old poincare sphere
 		for selected_object in self.project_componentsList:
 			if selected_object.get_Type() not in ["Project", "Detector"]:
 				selected_object.draw_visual(self.panel_Poincare.canvas.view.scene)

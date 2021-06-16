@@ -12,11 +12,9 @@ from vispy.scene.visuals import GridMesh
 
 from vispy.color import Color
 
-# from polarization_sources import SoP
-#
-# from polarization_components import Retarder, Polariser
-
-from component_definitions import Generic_Waveplate, Linear_Polariser, StateofPolarization
+from components.polarizers import Linear_Polariser
+from components.waveplates import Generic_Waveplate
+from components.source import StateofPolarization
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.3f}'.format})
 

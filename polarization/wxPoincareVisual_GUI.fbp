@@ -11,12 +11,12 @@
         <property name="embedded_files_path">res</property>
         <property name="encoding">UTF-8</property>
         <property name="event_generation">connect</property>
-        <property name="file">wxPoincareTool_GUI</property>
+        <property name="file">wxPoincareVisual_GUI</property>
         <property name="first_id">1000</property>
         <property name="help_provider">none</property>
         <property name="indent_with_spaces"></property>
         <property name="internationalize">0</property>
-        <property name="name">wxPoincareTool</property>
+        <property name="name">wxPoincareVisual</property>
         <property name="namespace"></property>
         <property name="path">.</property>
         <property name="precompiled_header"></property>
@@ -48,7 +48,7 @@
             <property name="size">1159,901</property>
             <property name="style">wxDEFAULT_FRAME_STYLE</property>
             <property name="subclass">; ; forward_declare</property>
-            <property name="title">Poincare Sphere Tool</property>
+            <property name="title">Poincare Sphere Visual</property>
             <property name="tooltip"></property>
             <property name="window_extra_style"></property>
             <property name="window_name"></property>
