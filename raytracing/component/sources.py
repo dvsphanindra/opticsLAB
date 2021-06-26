@@ -1,6 +1,6 @@
 import numpy as np
-from primitives import LineVector
-from materialProperties import refractiveIndex
+from .primitives.lineVector import LineVector
+from .materialProperties import refractiveIndex
 
 class Ray(LineVector):
 	def __init__(self, startPoint, rayDirection=None, wavelength=0.55, length=1.0, color="green", degrees=True):

@@ -1,5 +1,5 @@
 import numpy as np
-from primitives import Plane
+from .primitives.plane import Plane
 
 
 class RectangularScreen(Plane):

@@ -6,19 +6,21 @@ from vispy import scene
 
 import vispy as vispy
 
-from miscellaneous import XYZAxis_Labeled, OpticalAxis
+from component.miscellaneous import XYZAxis_Labeled, OpticalAxis
 
-from detectors import RectangularScreen
+from component.detectors import RectangularScreen
 
-from sources import Ray, CircularBeam
+from component.sources import Ray, CircularBeam
 
-from opticalPrimitives import RectangularSurface, ConicSurface
+from component.opticalPrimitives.rectangularSurface import RectangularSurface
+from  component.opticalPrimitives.conicSurface import ConicSurface
 
 from vispy.color import Color
 
 from matplotlib import pyplot as plt
 
-from opticalPrimitives import Convex_Paraboloid, Concave_Paraboloid
+from component.opticalPrimitives.convexParaboloid import Convex_Paraboloid
+from component.opticalPrimitives.concaveParaboloid import Concave_Paraboloid
 
 from scipy.spatial.transform import Rotation
 

@@ -2,7 +2,7 @@ import wx
 
 import wx.propgrid as wxpg
 
-import wxPoincareVisual_GUI
+import wxPoincareSphere_GUI
 
 from objectListView import objectList
 
@@ -14,15 +14,15 @@ import os
 
 import numpy as np
 
-from vispy_PoincareCanvas import PoincareSphere_Canvas, PoincareSphere
+from pyOptiCAD.polarization.vispy_canvas import PoincareSphere_VispyCanvas, PoincareSphere
 
-from vispy_PolarizationEllipse import wxPolarizationEllipse
+from pyOptiCAD.polarization.vispy_canvas import PolarizationEllipse_VispyCanvas
 
-from components.project import Project
+from pyOptiCAD.polarization.components import Project
 
 import datetime
 
-import components as cd
+import pyOptiCAD.polarization.components as cd
 
 import inspect
 
@@ -39,11 +39,11 @@ class FileDrop(wx.FileDropTarget):
 
 ###############################################################################
 
-class wxPoincareTool(wxPoincareVisual_GUI.mainFrame):
+class wxPoincareTool(wxPoincareSphere_GUI.mainFrame):
 	""" Sub Class the GUI created with wxFormBuilder and extend the functionality """
 	
 	def __init__(self, parent):
-		wxPoincareVisual_GUI.mainFrame.__init__(self, parent)
+		wxPoincareSphere_GUI.mainFrame.__init__(self, parent)
 		self.fileName = None
 		self.selectedComponent = None
 		self.saveFileName = None
@@ -75,7 +75,7 @@ class wxPoincareTool(wxPoincareVisual_GUI.mainFrame):
 		# Add a (default) page to the Property Grid. Otherwise the widget will not work properly
 		self.propertyGrid_Config.AddPage("Page 1")
 		
-		self.panel_Poincare.canvas = PoincareSphere_Canvas(app="wx", parent=self.panel_Poincare, sizes=self.panel_Poincare.GetSize(), azimuth=90, elevation=10, resizable=True, labels=("Q", "U", "V"))
+		self.panel_Poincare.canvas = PoincareSphere_VispyCanvas(app="wx", parent=self.panel_Poincare, sizes=self.panel_Poincare.GetSize(), azimuth=90, elevation=10, resizable=True, labels=("Q", "U", "V"))
 		
 		# Interactions with the figure
 		self.panel_Poincare.canvas.events.mouse_press.connect(self.canvas_ImageOnClick)
@@ -85,8 +85,8 @@ class wxPoincareTool(wxPoincareVisual_GUI.mainFrame):
 		self.selected_object=None
 		self.intermediate_SoP = []
 		
-		self.panel_PolarizationEllipse.canvas = wxPolarizationEllipse(app="wx", parent=self.panel_PolarizationEllipse,
-		                                                   sizes=self.panel_PolarizationEllipse.GetSize(),  resizable=True)
+		self.panel_PolarizationEllipse.canvas = PolarizationEllipse_VispyCanvas(app="wx", parent=self.panel_PolarizationEllipse,
+		                                                                        sizes=self.panel_PolarizationEllipse.GetSize(), resizable=True)
 		
 		# Display the camera coordinates
 		self.SetStatusText("E: {0:3.2f}, A: {1:3.2f}".format(self.panel_Poincare.canvas.view.camera.elevation, self.panel_Poincare.canvas.view.camera.azimuth), 2)
@@ -145,7 +145,7 @@ class wxPoincareTool(wxPoincareVisual_GUI.mainFrame):
 					self.propertyGrid_Config.Append(wxpg.BoolProperty(name, key, value=value))
 					self.propertyGrid_Config.SetPropertyAttribute(key, "UseCheckbox", True)  # The attribute name and value
 				
-				if type(value) is float or isinstance(value, np.float):
+				if type(value) is float:
 					self.propertyGrid_Config.Append(wxpg.FloatProperty(name, key, value=value))
 				
 				if type(value) is int:

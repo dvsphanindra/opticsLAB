@@ -1,5 +1,5 @@
 import numpy as np
-from primitives import LineVector
+from .primitives.lineVector import LineVector
 
 from vispy import scene
 

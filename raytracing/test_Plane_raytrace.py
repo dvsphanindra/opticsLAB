@@ -6,19 +6,23 @@ from vispy import scene
 
 import vispy as vispy
 
-from miscellaneous import XYZAxis_Labeled, OpticalAxis
+from component.miscellaneous import XYZAxis_Labeled, OpticalAxis
 
-from detectors import RectangularScreen
+from component.detectors import RectangularScreen
 
-from sources import Ray, CircularBeam
+from component.sources import Ray, CircularBeam
 
-from opticalPrimitives import RectangularSurface, ConicSurface
+from component.opticalPrimitives.rectangularSurface import RectangularSurface
+from component.opticalPrimitives.conicSurface import ConicSurface
 
 from vispy.color import Color
 
 from matplotlib import pyplot as plt
 
-from primitives import Parabolic_Surface, Cylinder, Plane, Plane_Circular
+# from .component.primitives.parabolicSurface import Parabolic_Surface
+# from .component.primitives.cylinder import Cylinder
+# from .component.primitives.plane import Plane
+# from .component.primitives.circularPlane import Plane_Circular
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
@@ -73,7 +77,7 @@ plane1.rotate_aboutY(270)
 view.add(plane1.get_Visual())
 view.add(plane1.get_normalVisual())
 
-plane2=RectangularSurface((1.7,0,0),mediumBefore='BK7', mediumAfter='Air', color=Color((0.3, 0.3, 1), alpha=0.3))
+plane2=RectangularSurface((1.7,0,0), mediumBefore='BK7', mediumAfter='Air', color=Color((0.3, 0.3, 1), alpha=0.3))
 plane2.rotate_aboutX(20)
 plane2.rotate_aboutY(270)
 view.add(plane2.get_Visual())

@@ -6,15 +6,15 @@ from vispy import scene
 
 import vispy as vispy
 
-from raytracing.miscellaneous import XYZAxis_Labeled
+from raytracing.component.miscellaneous import XYZAxis_Labeled
 
 from vispy.scene.visuals import GridMesh
 
 from vispy.color import Color
 
-from components.polarizers import Linear_Polariser
-from components.waveplates import Generic_Waveplate
-from components.source import StateofPolarization
+from ..components import Linear_Polariser
+from ..components import Generic_Waveplate
+from ..components import StateofPolarization
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.3f}'.format})
 
@@ -29,7 +29,7 @@ class Coordinate_Axes(XYZAxis_Labeled):
 		XYZAxis_Labeled.__init__(self, parent=parent, labels=labels)
 
 
-class PoincareSphere_Canvas(scene.SceneCanvas):
+class PoincareSphere_VispyCanvas(scene.SceneCanvas):
 	def __init__(self, *a, **k):
 		sizes = k.pop("sizes", (300, 300))  # Default value is (300, 300)
 		azimuth = k.pop("azimuth", 100)

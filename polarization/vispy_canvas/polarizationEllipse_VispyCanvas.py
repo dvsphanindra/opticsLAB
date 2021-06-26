@@ -15,10 +15,10 @@ from vispy.color import Color
 from scipy.spatial.transform import Rotation as R
 
 
-class wxPolarizationEllipse(scene.SceneCanvas):
+class PolarizationEllipse_VispyCanvas(scene.SceneCanvas):
 	def __init__(self, stokesVector=None, color='r', *a, **k):
 		sizes = k.pop("sizes", (300, 300))  # Default value is (300, 300)
-		print(sizes)
+		# print(sizes)
 		self.color = color
 		self.stokesVector=stokesVector
 		self.stokesVector_visual = None
@@ -56,7 +56,7 @@ class wxPolarizationEllipse(scene.SceneCanvas):
 	def draw_StokesVector(self):
 		# Refer https://en.wikipedia.org/wiki/Stokes_parameters for theory and notations of the polarization ellipse
 		I, Q, U, V = self.stokesVector  # Separate the stokes components
-		L = np.complex(Q,U)  # L: Intensity (Complex) of Linear Polarization, V: Intensity of Circular Polarization, I: Total Intensity
+		L = complex(Q,U)  # L: Intensity (Complex) of Linear Polarization, V: Intensity of Circular Polarization, I: Total Intensity
 		I_p = np.sqrt(Q ** 2 + U ** 2 + V ** 2)  # Intensity of polarized fraction of light
 		
 		# Calculate the major (A) and minor (B) axes, orientation of the polarization ellipse (theta) and handedness of polarization (h)
@@ -71,26 +71,26 @@ class wxPolarizationEllipse(scene.SceneCanvas):
 		points = np.vstack((a * np.cos(t), b * np.sin(t), np.zeros(np.shape(t)))).T
 		rotation = R.from_euler('z', theta)
 		
-		self.x_values, self.y_values, _ = rotation.apply(points).T
+		x_values, y_values, _ = rotation.apply(points).T
 		
-		print("(A,B), (L,absL), theta, (I_p, h) = ({0},{1}), ({2},{3}), {4},({5}, {6})".format(A, B, L, np.absolute(L), np.rad2deg(theta), I_p, h))
+		# print("(A,B), (L,absL), theta, (I_p, h) = ({0},{1}), ({2},{3}), {4},({5}, {6})".format(A, B, L, np.absolute(L), np.rad2deg(theta), I_p, h))
 		
 		if self.stokesVector_visual is not None:
 			self.stokesVector_visual.parent=None
 			self.stokesVectorArrow_visual.parent=None
 		
-		self.stokesVector_visual = scene.LinePlot((self.x_values, self.y_values), parent=self.view.scene)
+		self.stokesVector_visual = scene.LinePlot((x_values, y_values), parent=self.view.scene)
 		
 		if h == -1:
-			arrowHead = np.array([(self.x_values[7], self.y_values[7], 0, self.x_values[8], self.y_values[8], 0)])  # Arrow direction, position
+			arrowHead = np.array([(x_values[7], y_values[7], 0, x_values[8], y_values[8], 0)])  # Arrow direction, position
 			
-			self.stokesVectorArrow_visual = Arrow(pos=np.array([(self.x_values[8], self.y_values[8], 0), (self.x_values[7], self.y_values[7], 0)]), color=self.color,
+			self.stokesVectorArrow_visual = Arrow(pos=np.array([(x_values[8], y_values[8], 0), (x_values[7], y_values[7], 0)]), color=self.color,
 			              method='gl', width=5., arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0,
 			              arrow_color=self.color, antialias=True, parent=self.view.scene)
 		else:
-			arrowHead = np.array([(self.x_values[8], self.y_values[8], 0, self.x_values[7], self.y_values[7], 0)])  # Arrow direction, position
+			arrowHead = np.array([(x_values[8], y_values[8], 0, x_values[7], y_values[7], 0)])  # Arrow direction, position
 			
-			self.stokesVectorArrow_visual = Arrow(pos=np.array([(self.x_values[8], self.y_values[8], 0), (self.x_values[7], self.y_values[7], 0)]), color=self.color,
+			self.stokesVectorArrow_visual = Arrow(pos=np.array([(x_values[8], y_values[8], 0), (x_values[7], y_values[7], 0)]), color=self.color,
 			              method='gl', width=5., arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0,
 			              arrow_color=self.color, antialias=True, parent=self.view.scene)
 			
@@ -109,7 +109,7 @@ class wxPolarizationEllipse(scene.SceneCanvas):
 		
 
 if __name__ == '__main__':
-	p=wxPolarizationEllipse()
+	p=PolarizationEllipse_VispyCanvas()
 	p.set_StokesVector(np.array((1,0,0,-1)))
 	
 	if sys.flags.interactive == 0:
