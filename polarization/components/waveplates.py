@@ -102,7 +102,7 @@ class Generic_Waveplate(BaseComponent):
 		self.__calculate_MuellerMatrix()
 		self.__calculate_JonesMatrix()
 		
-		self.parentVisual = kwargs.get("parent", None)  # Visual will not be drawn in parent object is not passed
+		self.parentCanvas = kwargs.get("parentCanvas", None)  # Visual will not be drawn in parent object is not passed
 		
 		# Set the help string for display in properties box
 		self._helpString.update(
@@ -118,12 +118,12 @@ class Generic_Waveplate(BaseComponent):
 		
 		self.__create_quaternion(self.delta, self.theta)
 		
-		if self.parentVisual is not None:
-			self.draw_visual(parentVisual=self.parentVisual)
+		if self.parentCanvas is not None:
+			self.draw_visual(parentCanvas=self.parentCanvas)
 		
 		print("----Retarder '%s' created----" % self.name)
 	
-	def draw_visual(self, parentVisual):
+	def draw_visual(self, parentCanvas):
 		
 		if self.retarder_Arrow is not None:
 			# Delete the existing visuals if they exist
@@ -131,7 +131,7 @@ class Generic_Waveplate(BaseComponent):
 			self.labelText = None
 			self.retarderDirection = np.array([1, 0, 0])
 		
-		self.parentVisual = parentVisual
+		self.parentCanvas = parentCanvas
 		arrowStart = (0, 0, 0)
 		arrowDirection = self.position - arrowStart
 		# Derive arrow position from the point and direction of arrow from the tangent (or direction cosine) of the line at the point
@@ -139,11 +139,11 @@ class Generic_Waveplate(BaseComponent):
 		self.retarder_Arrow = Arrow(pos=np.array([(0, 0, 0), self.position]), color=self.color, method='gl', width=5.,
 		                            arrows=arrowHead,
 		                            arrow_type="angle_30", arrow_size=5.0, arrow_color=self.color, antialias=True,
-		                            parent=self.parentVisual)
+		                            parent=self.parentCanvas.view.scene)
 		self.retarder_Arrow.transform = scene.transforms.MatrixTransform()
 		self.retarder_Arrow.interactive = True
 		
-		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentVisual,
+		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentCanvas.view.scene,
 		                            pos=self.position + (0.15 * arrowDirection))
 		self.labelText.transform = scene.transforms.MatrixTransform()
 		self.labelText.interactive = True
@@ -168,11 +168,9 @@ class Generic_Waveplate(BaseComponent):
 		"""
 		# Calculate the result SoP by rotating the vector using quaternion
 		result = self.quaternion.apply(incoming_SoP.get_PolarizationVector())
-		result_SoP = StateofPolarization(mueller=np.append(np.array([1, ]), result), parent=self.parentVisual,
-		                                 color=incoming_SoP.get_Color(),
-		                                 name=incoming_SoP.get_Name() + 'x' + self.name)
+		result_SoP = StateofPolarization(mueller=np.append(np.array([1, ]), result), parent=self.parentCanvas, color=incoming_SoP.get_Color(), name=incoming_SoP.get_Name() + 'x' + self.name)
 		
-		if self.parentVisual is not None:
+		if self.parentCanvas is not None:
 			self.__draw_retarderEffect(incoming_SoP)
 		
 		return result_SoP
@@ -208,8 +206,8 @@ class Generic_Waveplate(BaseComponent):
 		
 		# Debug Info
 		# print("center=",self.retarderDirection, si, center)
-		# scene.Text("◊", font_size=70, bold=True, color=self.color, parent=self.parentVisual, pos=center)  # To display the center point
-		# Line(np.array([center, arcStart]), connect='strip', method='gl', width=2, color=self.color, parent=self.parentVisual)
+		# scene.Text("◊", font_size=70, bold=True, color=self.color, parent=self.parentCanvas.view.scene, pos=center)  # To display the center point
+		# Line(np.array([center, arcStart]), connect='strip', method='gl', width=2, color=self.color, parent=self.parentCanvas.view.scene)
 		# print("line=", direction_of_intersection)
 		# print("Angle=", arcStart, circle_StartVector, SoP_vector, np.rad2deg(arc_StartAngle))#, np.rad2deg(arcAngle))
 		
@@ -222,7 +220,7 @@ class Generic_Waveplate(BaseComponent):
 		y = r * np.cos(t)
 		z = r * np.sin(t)
 		x = np.zeros(y.size)
-		arc = LinePlot((x, y, z), width=15, color=self.color, parent=self.parentVisual)
+		arc = LinePlot((x, y, z), width=15, color=self.color, parent=self.parentCanvas.view.scene)
 		arc.transform = scene.transforms.MatrixTransform()
 		arc.transform.rotate(2 * np.rad2deg(self.theta), (0, 0, 1))
 		arc.transform.translate(center)
@@ -235,7 +233,7 @@ class Generic_Waveplate(BaseComponent):
 		# The pos parameter is simply a line of short length same as that of the arrowhead
 		arrow = Arrow(pos=np.array([(x[50], y[50], z[50]), (x[51], y[51], z[51])]), color=self.color, method='gl',
 		              width=arrowSize, arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0, arrow_color=self.color,
-		              antialias=True, parent=self.parentVisual)
+		              antialias=True, parent=self.parentCanvas.view.scene)
 		arrow.transform = scene.transforms.MatrixTransform()
 		arrow.transform.rotate(2 * np.rad2deg(self.theta), (0, 0, 1))
 		arrow.transform.translate(center)

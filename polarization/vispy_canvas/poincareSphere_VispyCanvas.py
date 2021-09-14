@@ -23,10 +23,10 @@ np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.3f
 #sys.path.append("/media/DATA/Python_projects/pyOptiCAD/")
 
 class Coordinate_Axes(XYZAxis_Labeled):
-	def __init__(self, parent, labels=("S1", "S2", "S3"), labels_on=True):
+	def __init__(self, parentCanvas, labels=("S1", "S2", "S3"), labels_on=True):
 		if not labels_on:
 			labels=("", "", "")
-		XYZAxis_Labeled.__init__(self, parent=parent, labels=labels)
+		XYZAxis_Labeled.__init__(self, parentCanvas=parentCanvas, labels=labels)
 
 
 class PoincareSphere_VispyCanvas(scene.SceneCanvas):
@@ -113,11 +113,11 @@ class PoincareSphere_VispyCanvas(scene.SceneCanvas):
 	"""
 	
 class PoincareSphere:
-	def __init__(self, parent, radius=1.0, center=(0.0, 0.0, 0.0), color=Color((0.3, 0.3, 1, 0.4)), labels=("S1", "S2", "S3")):
+	def __init__(self, parentCanvas, radius=1.0, center=(0.0, 0.0, 0.0), color=Color((0.3, 0.3, 1, 0.4)), labels=("S1", "S2", "S3")):
 		"""
 		Creates the data of a sphere whose center, and radius are given as inputs
 		"""
-		self.parent=parent
+		self.parentCanvas=parentCanvas
 		self.color = color
 		self.axesLabels = labels
 		# Generate the grid in spherical coordinates
@@ -142,9 +142,9 @@ class PoincareSphere:
 			self.axes.parent = None
 			self.mesh.parent = None
 			
-		self.axes=Coordinate_Axes(parent=self.parent, labels=self.axesLabels)
+		self.axes=Coordinate_Axes(parentCanvas=self.parentCanvas, labels=self.axesLabels)
 		
-		self.mesh=GridMesh(self.x_grid, self.y_grid, self.z_grid, parent=self.parent, color=self.color)
+		self.mesh=GridMesh(self.x_grid, self.y_grid, self.z_grid, parent=self.parentCanvas.view.scene, color=self.color)
 		self.mesh.ambient_light_color=Color((0.3, 0.3, 1, 0.1))
 		self.mesh.light_dir=np.array((0,0,1))
 		self.mesh.shading='flat'
@@ -179,7 +179,7 @@ if __name__ == '__main__':
 	
 	
 
-	sphere = PoincareSphere(parent=view.scene)
+	sphere = PoincareSphere(parentCanvas=view.scene)
 	canvas.show()
 	
 	if sys.flags.interactive == 0:

@@ -81,7 +81,7 @@ class Linear_Polariser(BaseComponent):
 		self.__calculate_MuellerMatrix()
 		self.__calculate_JonesMatrix()
 		
-		self.parentVisual = kwargs.get("parent", None)
+		self.parentCanvas = kwargs.get("parentCanvas", None)  # Visual will not be drawn in parent object is not passed
 		
 		self.polariserDirection = np.array([1, 0, 0])
 		
@@ -89,22 +89,22 @@ class Linear_Polariser(BaseComponent):
 		
 		print("----Polariser '%s' created----" % self.name)
 		
-		if self.parentVisual is not None:
-			self.draw_visual(self.parentVisual)
+		if self.parentCanvas is not None:
+			self.draw_visual(self.parentCanvas)
 	
-	def draw_visual(self, parentVisual):
-		self.parentVisual = parentVisual
+	def draw_visual(self, parentCanvas):
+		self.parentCanvas = parentCanvas
 		self.arrowStart = (0, 0, 0)
 		self.arrowDirection = self.position - self.arrowStart
 		# Derive arrow position from the point and direction of arrow from the tangent (or direction cosine) of the line at the point
 		arrowHead = np.array([(0, 0, 0, 1, 0, 0)])  # Arrow direction, position
 		self.polariser_Arrow = Arrow(pos=np.array([(0, 0, 0), self.position]), color=self.color, method='gl', width=5.,
 		                             arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0, arrow_color=self.color,
-		                             antialias=True, parent=self.parentVisual)
+		                             antialias=True, parent=self.parentCanvas.view.scene)
 		self.polariser_Arrow.transform = scene.transforms.MatrixTransform()
 		self.polariser_Arrow.interactive = True
 		
-		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentVisual,
+		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentCanvas.view.scene,
 		                            pos=self.position + (0.15 * self.arrowDirection))
 		self.labelText.transform = scene.transforms.MatrixTransform()
 		self.labelText.interactive = True
@@ -133,12 +133,10 @@ class Linear_Polariser(BaseComponent):
 		# From the basic relations for S0, S1, S2, S3 given in https://en.wikipedia.org/wiki/Stokes_parameters
 		# DoP=1, two_Xi=0, the relations simplify
 		result_polarization_vector = np.array((I * np.cos(two_psi), I * np.sin(two_psi), 0))
-		result_SoP = StateofPolarization(mueller=np.append([I], result_polarization_vector), parent=self.parentVisual,
-		                                 color=incoming_SoP.get_Color(),
-		                                 name=incoming_SoP.get_Name() + '+' + self.name)
+		result_SoP = StateofPolarization(mueller=np.append([I], result_polarization_vector), parent=self.parentCanvas, color=incoming_SoP.get_Color(), name=incoming_SoP.get_Name() + '+' + self.name)
 		# print("In Polariser: gamma, 2Psi, result=",np.rad2deg([gamma, two_psi]), result_polarization_vector)
 		
-		if self.parentVisual is not None:
+		if self.parentCanvas is not None:
 			self.__draw_polariserEffect(incoming_SoP, result_polarization_vector)
 		
 		return result_SoP
@@ -151,7 +149,7 @@ class Linear_Polariser(BaseComponent):
 		
 		Arrow(pos=np.array([incoming_SoP.get_PolarizationVector(), result_polarization_vector]), color=self.color,
 		      method='gl', width=5., arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0,
-		      arrow_color=self.color, antialias=True, parent=self.parentVisual)
+		      arrow_color=self.color, antialias=True, parent=self.parentCanvas.view.scene)
 	
 	@staticmethod
 	def create_from_schema(schema):

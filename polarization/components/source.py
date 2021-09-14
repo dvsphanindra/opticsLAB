@@ -72,7 +72,7 @@ class StateofPolarization(BaseComponent):
 		self.type = "Source"
 		self.name = kwargs.get("name", "Source_1")
 		self.lambdaPresent = kwargs.get("lambdaPresent", 6563.0)
-		self.parentVisual = kwargs.get('parent', None)
+		self.parentCanvas = kwargs.get('parent', None)
 		
 		# Set the help string for display in properties box
 		self._helpString.update(
@@ -87,19 +87,19 @@ class StateofPolarization(BaseComponent):
 		
 		self.color = kwargs.get("color")
 		
-		if self.parentVisual is not None:
-			self.draw_visual(self.parentVisual)
+		if self.parentCanvas is not None:
+			self.draw_visual(self.parentCanvas)
 		
 		self.labelObject = None
 		self.labelText = None
 		
 		print("----Source '%s' created----" % self.name)
 	
-	def draw_visual(self, parentVisual):
-		self.parentVisual = parentVisual
-		self.labelObject = scene.Text("•", font_size=100, bold=True, color=self.color, parent=self.parentVisual,
+	def draw_visual(self, parentCanvas):
+		self.parentCanvas = parentCanvas
+		self.labelObject = scene.Text("•", font_size=100, bold=True, color=self.color, parent=self.parentCanvas.view.scene,
 		                              pos=self.polarizationVector.transpose())
-		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentVisual,
+		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentCanvas.view.scene,
 		                            pos=self.polarizationVector.transpose() + (
 					                            0.15 * self.polarizationVector.transpose()))
 		self.labelObject.interactive = True

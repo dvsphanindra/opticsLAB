@@ -24,7 +24,7 @@ class OpticalAxis(LineVector):
 
 class XYZAxis_Labeled(XYZAxis):
 	def __init__(self, label=True, labels=("X", "Y", "Z"), pos=None, parentCanvas=None, **kwargs):
-		kwargs.setdefault('parent', parentCanvas)
+		kwargs.setdefault('parent', parentCanvas.view.scene)
 		super().__init__(**kwargs)
 		self.unfreeze()
 		self.labeling = label
@@ -38,9 +38,9 @@ class XYZAxis_Labeled(XYZAxis):
 		self.z = self.position + [0, 0, 1.05]
 		
 		if self.labeling:
-			scene.Text(labels[0], font_size=50, bold=True, color='red', parent=parentCanvas, pos=self.x)
-			scene.Text(labels[1], font_size=50, bold=True, color='green', parent=parentCanvas, pos=self.y)
-			scene.Text(labels[2], font_size=50, bold=True, color='blue', parent=parentCanvas, pos=self.z)
+			scene.Text(labels[0], font_size=50, bold=True, color='red', parent=parentCanvas.view.scene, pos=self.x)
+			scene.Text(labels[1], font_size=50, bold=True, color='green', parent=parentCanvas.view.scene, pos=self.y)
+			scene.Text(labels[2], font_size=50, bold=True, color='blue', parent=parentCanvas.view.scene, pos=self.z)
 			
 # class Point_Object(Point):
 # 	def __init__(self, x, y, z, name=''):

@@ -128,8 +128,8 @@ class wxPoincareTool(wxPoincareSphere_GUI.mainFrame):
 		print(self.selectedComponent)
 		for selected_object in self.project_componentsList:
 			if selected_object.get_Type() not in ["Project", "Detector"]:
-				selected_object.draw_visual(self.panel_Poincare.canvas.view.scene)
-		self.poincareSphere=PoincareSphere(radius=1.0, center=(0.0, 0.0, 0.0), parent=self.panel_Poincare.canvas.view.scene, labels=("Q", "U", "V"))
+				selected_object.draw_visual(self.panel_Poincare.canvas)
+		self.poincareSphere=PoincareSphere(radius=1.0, center=(0.0, 0.0, 0.0), parentCanvas=self.panel_Poincare.canvas, labels=("Q", "U", "V"))
 		
 	def displayComponentProperties(self, component):
 		# print(vars(component))
@@ -357,7 +357,7 @@ class wxPoincareTool(wxPoincareSphere_GUI.mainFrame):
 		for component in self.project_componentsList:
 			if component.get_Type() not in ["Source", "Detector", "Project"]:
 				SoP=component.analyse(incoming_SoP)
-				SoP.draw_visual(self.panel_Poincare.canvas.view.scene)
+				SoP.draw_visual(self.panel_Poincare.canvas)
 				incoming_SoP=SoP
 				self.intermediate_SoP.append(SoP)
 		
