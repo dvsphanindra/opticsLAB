@@ -6,7 +6,7 @@ from vispy import scene
 
 import vispy as vispy
 
-from component.miscellaneous import XYZAxis_Labeled, OpticalAxis
+from component.miscellaneous_components import XYZAxis_Labeled, OpticalAxis
 
 from component.detectors import RectangularScreen
 

@@ -9,7 +9,7 @@ import marshmallow as mm
 import numpy as np
 import toml
 from marshmallow import Schema, fields, pre_load, post_load, validates, ValidationError
-from pyquaternion import Quaternion
+from scipy.spatial.transform import Rotation as R
 from vispy import scene
 from vispy.scene.visuals import Arrow
 
@@ -115,9 +115,8 @@ class Linear_Polariser(BaseComponent):
 	def __rotate(self, angle):
 		self.polariser_Arrow.transform.rotate(angle, (0, 0, 1))  # Rotate on the XY plane (about Z axis)
 		self.labelText.transform.rotate(angle, (0, 0, 1))
-		q = Quaternion(axis=(0, 0, 1), degrees=angle)
-		self.polariserDirection = q.rotate(
-			np.array(self.polariserDirection))  # Update the rotation quaternion direction
+		q = R.from_rotvec(angle * np.array((0,0,1)))
+		self.polariserDirection = q.apply(np.array(self.polariserDirection)) # Update the rotation quaternion direction
 	
 	def analyse(self, incoming_SoP):
 		"""

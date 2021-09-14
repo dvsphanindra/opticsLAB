@@ -6,7 +6,7 @@ from vispy import scene
 
 import vispy as vispy
 
-from raytracing.component.miscellaneous import XYZAxis_Labeled
+from raytracing.component.miscellaneous_components import XYZAxis_Labeled
 
 from vispy.scene.visuals import GridMesh
 

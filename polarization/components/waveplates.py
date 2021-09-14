@@ -10,7 +10,7 @@ import numpy as np
 import toml
 from marshmallow import Schema, fields, pre_load, post_load, validates, ValidationError
 from numpy import pi as PI
-from pyquaternion import Quaternion
+from scipy.spatial.transform import Rotation as R
 from vispy import scene
 from vispy.scene.visuals import Arrow, LinePlot
 
@@ -152,11 +152,9 @@ class Generic_Waveplate(BaseComponent):
 		self.__rotate(2 * np.rad2deg(self.theta))
 	
 	def __create_quaternion(self, delta, theta):
-		q = Quaternion(axis=(0, 0, 1),
-		               radians=2 * theta)  # Theta is automatically converted to radians in the component super class
-		self.retarderDirection = q.rotate(np.array(self.retarderDirection))  # Update the rotation quaternion direction
-		
-		self.quaternion = Quaternion(axis=self.retarderDirection, radians=2 * delta)
+		q = R.from_rotvec(2 * theta * np.array((0,0,1))) # theta is automatically converted to radians in the component super class
+		self.retarderDirection = q.apply(np.array(self.retarderDirection)) # Update the retarder direction
+		self.quaternion = R.from_rotvec(2 * delta * self.retarderDirection) # Create a quaternion from the retardance angle with retarder direction as the axis
 	
 	def __rotate(self, angle):
 		self.retarder_Arrow.transform.rotate(angle, (0, 0, 1))  # Rotate on the XY plane (about Z axis)
@@ -168,8 +166,8 @@ class Generic_Waveplate(BaseComponent):
 		:param incoming_SoP: incoming state of polarization
 		:return: resulting state of polarization after retardation
 		"""
-		result = self.quaternion.rotate(
-			incoming_SoP.get_PolarizationVector())  # Calculate the result SoP by rotating the vector using quaternion
+		# Calculate the result SoP by rotating the vector using quaternion
+		result = self.quaternion.apply(incoming_SoP.get_PolarizationVector())
 		result_SoP = StateofPolarization(mueller=np.append(np.array([1, ]), result), parent=self.parentVisual,
 		                                 color=incoming_SoP.get_Color(),
 		                                 name=incoming_SoP.get_Name() + 'x' + self.name)
@@ -189,8 +187,7 @@ class Generic_Waveplate(BaseComponent):
 		center = w + si * self.retarderDirection  # Find the center of rotation which is located on this plane
 		
 		# To draw the arc of rotation of the retarder
-		r = np.sqrt(np.sum((
-					                   center - incoming_SoP.get_PolarizationVector()) ** 2))  # Radius is the distance from center to the incoming SoP
+		r = np.sqrt(np.sum((center - incoming_SoP.get_PolarizationVector()) ** 2))  # Radius is the distance from center to the incoming SoP
 		
 		# Find the line of intersection of the plane (Normal: retarder direction vector) and the XY plane (Normal: z-axis)
 		# https://en.wikipedia.org/wiki/Intersection_curve#Intersection_line_of_two_planes
@@ -218,7 +215,7 @@ class Generic_Waveplate(BaseComponent):
 		
 		# Draw arc using quaternion
 		# for angle in np.linspace(0, self.delta):
-		# 	self.quaternion.rotate(incoming_SoP)
+		# 	self.quaternion.apply(incoming_SoP)
 		
 		# Draw the arc using the above data
 		t = np.linspace(arc_StartAngle, arc_StartAngle + (2 * self.delta), 100)

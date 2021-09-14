@@ -2,9 +2,11 @@ import numpy as np
 from vispy import scene
 from vispy.scene.visuals import SurfacePlot
 from .surface import Surface
+from ..miscellaneous_components import display_point
+
 
 class Parabolic_Surface(Surface):
-	def __init__(self, a, b, c, radius=1.0, center=(0, 0, 0), xTilt=0.0, yTilt=0.0, color='black'):
+	def __init__(self, a, b, c, radius=1.0, center=(0, 0, 0), name=None, xTilt=0.0, yTilt=0.0, color='black', parentCanvas=None):
 		"""
 		Creates the data of a paraboloid whose center, radius and a, b, c parameters are given as inputs
 		"""
@@ -23,8 +25,8 @@ class Parabolic_Surface(Surface):
 		# self.z_grid  = c * ((self.x_grid / a) ** 2 + (self.y_grid / b) ** 2) # Elliptic paraboloid
 		self.z_grid = self.function(self.x_grid, self.y_grid)
 		
-		super().__init__(center=center, x_grid=self.x_grid, y_grid=self.y_grid, z_grid=self.z_grid, xTilt=xTilt,
-		                 yTilt=yTilt, color=color)
+		super().__init__(center=center, x_grid=self.x_grid, y_grid=self.y_grid, z_grid=self.z_grid, name=name, xTilt=xTilt,
+		                 yTilt=yTilt, color=color, parentCanvas=parentCanvas)
 	
 	def function(self, x, y):
 		if type(x) != np.ndarray or type(y) != np.ndarray:
@@ -53,23 +55,26 @@ class Parabolic_Surface(Surface):
 	
 	def calculate_RayIntersection(self, ray):
 		a, b, c = self.parameters
-		x0, y0, z0 = self.inverse_transform(ray.get_StartPoint())
-		dx, dy, dz = self.inverse_transform(ray.get_Direction())
+		x0, y0, z0 = ray.get_StartPoint() # self.inverse_transform(ray.get_StartPoint())
+		dx, dy, dz = ray.get_Direction() # self.inverse_transform(ray.get_Direction())
 		
 		A = (dx / a) ** 2 + (dy / b) ** 2
 		B = (((2 * dx * x0) / a ** 2) + ((2 * dy * y0) / b ** 2) - (dz / c))
 		C = (x0 / a) ** 2 + (y0 / b) ** 2 - (z0 / c)
-		r = np.roots((A, B, C))
+		root = np.roots((A, B, C))
 		
-		# TODO TO select one of the roots based on a proper criteria
-		print("r= ", r)
-		if len(r) > 1:
-			r = r[1]
+		# TODO To select one of the roots based on a proper criteria (substitute in the surface equation, checking if the point is within bounds)
+		print("root= ", root)
+		r = root[1] if len(root) > 1 else root
 		intersectionPoint = ray.get_StartPoint() + (r * ray.get_Direction())
-		assert all(isinstance(n, float) for n in intersectionPoint), print("No real solution for intersection point: ",
-		                                                                   intersectionPoint, " r: ", r)
+		if all(isinstance(n, complex) for n in intersectionPoint):
+			print("No real solution for intersection point: " + str(intersectionPoint) + " r: " + str(r))
+			r = root[0]
+			intersectionPoint = ray.get_StartPoint() + (r * ray.get_Direction())
 		
-		intersectionPoint=self.transform(intersectionPoint)
+		display_point(intersectionPoint, marker='+', color='teal', parentCanvas=self.parentCanvas)
+		# intersectionPoint=self.transform(intersectionPoint)
+		# display_point(intersectionPoint, marker='x', color='white', parentCanvas=self.parentCanvas)
 		# print("intersection= ", intersectionPoint)
 		return intersectionPoint
 	

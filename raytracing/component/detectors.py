@@ -3,7 +3,7 @@ from .primitives.plane import Plane
 
 
 class RectangularScreen(Plane):
-	def __init__(self, center=(0, 0, 0), xTilt=0.0, yTilt=0.0, color='white'):
+	def __init__(self, center=(0, 0, 0), xTilt=0.0, yTilt=0.0, color='white', parent=None):
 		# TODO to adjust dimensions automatically according to the width and height of the rays incident on the plane
 		super().__init__(center=center, width=1.0, length=1.0, xTilt=xTilt, yTilt=yTilt, color=color)
 	

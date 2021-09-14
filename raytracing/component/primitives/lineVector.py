@@ -1,18 +1,27 @@
 import numpy as np
 from vispy.scene.visuals import Line
-
+from .miscellaneous import deg2DC
+from .primitive_point import Primitive_point
 
 class LineVector:
-	def __init__(self, start, direction, length=1, color='Blue'):
+	def __init__(self, start, direction, name=None, dc=False, length=1, color='Blue', parentCanvas=None):
 		"""
 		Creates a line or line segment object for rendering
-		:param: start: Starting coordinate of the line
-		:param: direction: Direction cosines of the line with respect to the openPyOpticalBench coordinates
+		:param: start: Starting point of the line. Can be a Point object or numpy array.
+		:param: direction: Direction of the line with respect to the openPyOpticalBench coordinates. Can be specified as angles in degrees or as direction cosines
+		:param: name: Name of the line for debugging purposes (optional)
+		:param: dc: If the direction is specified as dc (True) or angles (False). Default: False
 		:param length: Length of the line segment (Optional). Default: Unit length
 		:param color: Color to be shown when the line is being visualized (Optional). Default='Blue'
+		:param parentCanvas: Canvas on which the object is to be rendered. Default is None
 		"""
-		self.lineStart = np.array(start)
-		self.direction = np.array(direction)
+		self.lineStart = start.get_coordinates() if isinstance(start, Primitive_point) else np.array(start)
+		self.name=name
+		
+		if not dc:
+			self.direction = deg2DC(direction)
+		else:
+			self.direction = np.array(direction)
 		# TODO: assert
 		# assert self.direction-1 < 1, "No: {0}, {1}, {2}".format(self.direction[0]-1, self.direction[1]-1, self.direction[2]-1)
 		self.length = length
@@ -20,6 +29,7 @@ class LineVector:
 		self.lineEnd = None
 		self.vector = None
 		self.lineVisual = None
+		self.parentCanvas = parentCanvas
 		
 		self.create_Vector()
 	
@@ -28,8 +38,9 @@ class LineVector:
 		self.vector = self.lineEnd - self.lineStart
 		
 		# Create line Visual passing through two points
+		parent=None if self.parentCanvas is None else self.parentCanvas.view.scene
 		self.lineVisual = Line(np.array([self.lineStart, self.lineEnd]), connect='strip', method='gl', width=2,
-		                       color=self.color)
+		                       color=self.color, parent=parent)
 	
 	def update_Vector(self, endPoint):
 		endPoint = np.array(endPoint)
@@ -38,9 +49,11 @@ class LineVector:
 			self.vector = self.lineEnd - self.lineStart
 			self.length = np.linalg.norm(self.vector)
 			
+			self.lineVisual.parent=None # Remove the old visual
 			# Create line Visual passing through two points
+			parent = None if self.parentCanvas is None else self.parentCanvas.view.scene
 			self.lineVisual = Line(np.array([self.lineStart, self.lineEnd]), connect='strip', method='gl', width=2,
-			                       color=self.color)
+			                       color=self.color, parent=parent)
 	
 	def extend_Vector(self, length):
 		if self.length != length:  # Do not update if there is no change

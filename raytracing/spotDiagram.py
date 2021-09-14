@@ -63,7 +63,7 @@ class SpotDiagramPlot(scene.SceneCanvas):
 		self.spots = scene.LinePlot((data[:,0], data[:,1]), symbol=self.marker, color=self.marker_color, parent=self.view.scene)
 	
 if __name__ == '__main__':
-	p = SpotDiagramPlot()
+	p = SpotDiagramPlot(np.reshape(np.arange(0,25), (5,5)))
 	
 	if sys.flags.interactive == 0:
 		vispy.app.run()
