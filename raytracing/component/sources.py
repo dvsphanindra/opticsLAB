@@ -49,7 +49,7 @@ class Ray(LineVector):
 	def calculate_RefractedRay(self, surface):
 		intersectionPoint = surface.calculate_RayIntersection(ray=self)
 		if intersectionPoint is None:
-			# Display a intersection warning marker on the ray
+			# Display a 'no intersection warning' marker on the ray
 			fail_mark = self.lineStart + self.direction * 0.5
 			display_point(fail_mark, marker='!', color='r', size=50, parentCanvas=self.parentCanvas)
 			return None

@@ -23,32 +23,38 @@ np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.3f
 #sys.path.append("/media/DATA/Python_projects/pyOptiCAD/")
 
 class Coordinate_Axes(XYZAxis_Labeled):
-	def __init__(self, parentCanvas, labels=("S1", "S2", "S3"), labels_on=True):
-		if not labels_on:
+	def __init__(self, parentCanvas, labels=("S1", "S2", "S3"), labels_off=False):
+		if labels_off:
 			labels=("", "", "")
 		XYZAxis_Labeled.__init__(self, parentCanvas=parentCanvas, labels=labels)
 
 
-class PoincareSphere_VispyCanvas(scene.SceneCanvas):
-	def __init__(self, *a, **k):
+class PoincareSphere_VispyCanvas:
+	def __init__(self, bgColor='lightsteelblue', *a, **k):
 		sizes = k.pop("sizes", (300, 300))  # Default value is (300, 300)
 		azimuth = k.pop("azimuth", 100)
 		elevation = k.pop("elevation", 15)
 		labels = k.pop("labels", ("S1", "S2", "S3"))
-		scene.SceneCanvas.__init__(self, size=sizes, keys='interactive', *a, **k)
+		self.bgColor = bgColor
+		self.canvas = scene.SceneCanvas(keys='interactive', bgcolor=Color(color=self.bgColor, alpha=0.5))
+		self.view = self.canvas.central_widget.add_view()
+		self.view.camera = scene.TurntableCamera(up='z', fov=30)
+		# scene.SceneCanvas.__init__(self, size=sizes, keys='interactive', *a, **k)
 		
-		self.unfreeze()
-		self.view = self.central_widget.add_view()
-		self.view.bgcolor = Color(color="lightsteelblue")
-		self.view.camera = scene.TurntableCamera(up='+z', azimuth=azimuth, elevation=elevation, fov=30)
+		# self.unfreeze()
+		# self.view = self.central_widget.add_view()
+		# self.view.bgcolor = Color(color="lightsteelblue")
+		# self.view.camera = scene.TurntableCamera(up='+z', azimuth=azimuth, elevation=elevation, fov=30)
 		
 		# Draw a Poincare Sphere
-		# self.poincareSphere=PoincareSphere(radius=1.0, center=(0.0,0.0,0.0), parent=self.view.scene, labels=labels)
+		# self.poincareSphere=PoincareSphere(radius=1.0, center=(0.0,0.0,0.0), parentCanvas=self.view.scene, labels=labels)
 		
 		self.selected_object=None
 		self.selected_object_name=None
+		self.axesLabels = labels
+		# self.poincareSphere = PoincareSphere(radius=1.0, center=(0.0, 0.0, 0.0), parentCanvas=self, labels=self.axesLabels)
 		
-		self.show()
+		# self.show()
 	
 	def on_mouse_press(self, event):
 		tr = self.scene.node_transform(self.view.scene)
@@ -71,6 +77,11 @@ class PoincareSphere_VispyCanvas(scene.SceneCanvas):
 				# update transform to selected object
 				tr = self.scene.node_transform(self.selected_object)
 				pos = tr.map(event.pos)
+				
+	def show(self):
+		self.canvas.show()
+		if sys.flags.interactive == 0:
+			vispy.app.run()
 				
 	# def on_mouse_release(self, event):
 	# 	self.print_mouse_event(event, 'Mouse release')

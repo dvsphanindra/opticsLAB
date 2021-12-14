@@ -89,6 +89,8 @@ class Linear_Polariser(BaseComponent):
 		
 		print("----Polariser '%s' created----" % self.name)
 		
+		self.__create_quaternion(self.theta)
+		
 		if self.parentCanvas is not None:
 			self.draw_visual(self.parentCanvas)
 	
@@ -110,13 +112,15 @@ class Linear_Polariser(BaseComponent):
 		self.labelText.interactive = True
 		
 		# Rotate the polariser visual after creating the arrow and head from the origin to the proper position
-		self.__rotate(2 * np.rad2deg(self.theta))
+		self.__rotate(2 * self.theta)
 	
 	def __rotate(self, angle):
-		self.polariser_Arrow.transform.rotate(angle, (0, 0, 1))  # Rotate on the XY plane (about Z axis)
-		self.labelText.transform.rotate(angle, (0, 0, 1))
-		q = R.from_rotvec(angle * np.array((0,0,1)))
-		self.polariserDirection = q.apply(np.array(self.polariserDirection)) # Update the rotation quaternion direction
+		self.polariser_Arrow.transform.rotate(np.rad2deg(angle), (0, 0, 1))  # Rotate on the XY plane (about Z axis)
+		self.labelText.transform.rotate(np.rad2deg(angle), (0, 0, 1))
+	
+	def __create_quaternion(self, theta):
+		q = R.from_rotvec(2 * theta * np.array((0, 0, 1)))
+		self.polariserDirection = q.apply(np.array(self.polariserDirection))  # Update the rotation quaternion direction
 	
 	def analyse(self, incoming_SoP):
 		"""
@@ -124,17 +128,22 @@ class Linear_Polariser(BaseComponent):
 		:param incoming_SoP: incoming state of polarization
 		:return: resulting state of polarization after polarisation
 		"""
-		# gamma is the angle between the orientation of the polariser and orientation of the incoming SoP
-		gamma = np.arccos(np.dot(self.polariserDirection, incoming_SoP.get_PolarizationVector()))
-		two_psi = np.arctan(self.polariserDirection[1] / self.polariserDirection[0])
-		if np.abs(self.theta) > 45:
-			two_psi += np.pi
-		I = np.cos(gamma / 2) ** 2
+		
+		incoming_SoP_direction=incoming_SoP.get_PolarizationVector()
+		# Determine gamma -the angle between the orientation of the polariser and orientation of the incoming SoP
+		if incoming_SoP_direction[0] == 0 and incoming_SoP_direction[1] == 0:  # Unpolarized incoming light
+			gamma = np.pi / 2
+		else:
+			gamma = np.arccos(np.dot(incoming_SoP_direction, self.polariserDirection)) # Angle between the lines is the dot product of direction cosines of the lines
+		print(f"polariser direction={self.polariserDirection}, polarization vector={incoming_SoP.get_PolarizationVector()}, gamma={gamma}")
+		
 		# From the basic relations for S0, S1, S2, S3 given in https://en.wikipedia.org/wiki/Stokes_parameters
-		# DoP=1, two_Xi=0, the relations simplify
-		result_polarization_vector = np.array((I * np.cos(two_psi), I * np.sin(two_psi), 0))
-		result_SoP = StateofPolarization(mueller=np.append([I], result_polarization_vector), parent=self.parentCanvas, color=incoming_SoP.get_Color(), name=incoming_SoP.get_Name() + '+' + self.name)
-		# print("In Polariser: gamma, 2Psi, result=",np.rad2deg([gamma, two_psi]), result_polarization_vector)
+		# The intensity value will be modified by cos^2(γ/2), the remaining intensity is distributed into Q and U
+		# This distribution occurs so as to align the output radiation along the direction of orientation of the polariser
+		I = incoming_SoP.get_intensity() * np.cos(gamma / 2) ** 2
+		result_polarization_vector = I * self.polariserDirection
+		result_SoP = StateofPolarization(mueller=np.append([I], result_polarization_vector), parentCanvas=self.parentCanvas, color=incoming_SoP.get_Color(), name=incoming_SoP.get_Name() + '+' + self.name)
+		print(f"In Polariser: gamma={np.rad2deg(gamma)}, result(Q,U,V)={result_polarization_vector}, resultSoP={result_SoP.get_StokesVector()}, incoming={incoming_SoP.get_PolarizationVector()}")
 		
 		if self.parentCanvas is not None:
 			self.__draw_polariserEffect(incoming_SoP, result_polarization_vector)

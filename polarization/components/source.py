@@ -72,7 +72,7 @@ class StateofPolarization(BaseComponent):
 		self.type = "Source"
 		self.name = kwargs.get("name", "Source_1")
 		self.lambdaPresent = kwargs.get("lambdaPresent", 6563.0)
-		self.parentCanvas = kwargs.get('parent', None)
+		self.parentCanvas = kwargs.get('parentCanvas', None)
 		
 		# Set the help string for display in properties box
 		self._helpString.update(
@@ -124,10 +124,7 @@ class StateofPolarization(BaseComponent):
 			if squareSum < 1.0001:  # Allow for numpy precision in calculations
 				self.polarizationVector = np.round(self.polarizationVector, 13)
 			else:
-				raise AssertionError(
-					"Irregular Stokes Vector: S0, vector, square, sum of square: {0}, {1}, {2}, {3}".format(
-						self.stokes_vector[0], self.polarizationVector, np.square(self.polarizationVector),
-						np.sum(np.square(self.polarizationVector))))
+				raise AssertionError(f"Irregular Stokes Vector: S0={self.stokes_vector[0]}, (Q,U,V)={self.polarizationVector}, square(Q,U,V)={np.square(self.polarizationVector)}, sum of square(Q,U,V): {np.sum(np.square(self.polarizationVector))}")
 	
 	# ---------------------------------------------------------------------------
 	def set_MuellerMatrix(self, mueller):

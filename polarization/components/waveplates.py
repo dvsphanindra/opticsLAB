@@ -11,8 +11,11 @@ import toml
 from marshmallow import Schema, fields, pre_load, post_load, validates, ValidationError
 from numpy import pi as PI
 from scipy.spatial.transform import Rotation as R
+from scipy.spatial.transform import Slerp
 from vispy import scene
 from vispy.scene.visuals import Arrow, LinePlot
+import warnings
+from pyOptiCAD.raytracing.component.primitives.custom_warnings import RetarderNote
 
 from .component import BaseComponent
 from .source import StateofPolarization
@@ -154,7 +157,7 @@ class Generic_Waveplate(BaseComponent):
 	def __create_quaternion(self, delta, theta):
 		q = R.from_rotvec(2 * theta * np.array((0,0,1))) # theta is automatically converted to radians in the component super class
 		self.retarderDirection = q.apply(np.array(self.retarderDirection)) # Update the retarder direction
-		self.quaternion = R.from_rotvec(2 * delta * self.retarderDirection) # Create a quaternion from the retardance angle with retarder direction as the axis
+		self.quaternion = R.from_rotvec(self.retarderDirection * -delta) # Create a quaternion from the retardance angle with retarder direction as the axis (axis-angle)
 	
 	def __rotate(self, angle):
 		self.retarder_Arrow.transform.rotate(angle, (0, 0, 1))  # Rotate on the XY plane (about Z axis)
@@ -168,7 +171,7 @@ class Generic_Waveplate(BaseComponent):
 		"""
 		# Calculate the result SoP by rotating the vector using quaternion
 		result = self.quaternion.apply(incoming_SoP.get_PolarizationVector())
-		result_SoP = StateofPolarization(mueller=np.append(np.array([1, ]), result), parent=self.parentCanvas, color=incoming_SoP.get_Color(), name=incoming_SoP.get_Name() + 'x' + self.name)
+		result_SoP = StateofPolarization(mueller=np.append(np.array([incoming_SoP.get_intensity(), ]), result), parentCanvas=self.parentCanvas, color=incoming_SoP.get_Color(), name=incoming_SoP.get_Name() + 'x' + self.name)
 		
 		if self.parentCanvas is not None:
 			self.__draw_retarderEffect(incoming_SoP)
@@ -195,48 +198,52 @@ class Generic_Waveplate(BaseComponent):
 		
 		# Find the SoP Vector to determine the starting angle of the arc
 		SoP_vector = incoming_SoP.get_PolarizationVector() - center
-		print("SoP=", SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector))
-		# print("[1],[2]=", np.dot(SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector)))
-		dot = np.dot(SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector))
-		if np.abs(dot) < 1.0001:  # Allow for numpy precision in calculations
-			dot = np.round(dot, 4)
-		arc_StartAngle = np.arccos(dot)
-		if SoP_vector[2] < 0:  # If the SoP is in the lower hemisphere,
-			arc_StartAngle = 2 * np.pi - arc_StartAngle  # determine the outer angle between the vectors
-		
-		# Debug Info
-		# print("center=",self.retarderDirection, si, center)
-		# scene.Text("◊", font_size=70, bold=True, color=self.color, parent=self.parentCanvas.view.scene, pos=center)  # To display the center point
-		# Line(np.array([center, arcStart]), connect='strip', method='gl', width=2, color=self.color, parent=self.parentCanvas.view.scene)
-		# print("line=", direction_of_intersection)
-		# print("Angle=", arcStart, circle_StartVector, SoP_vector, np.rad2deg(arc_StartAngle))#, np.rad2deg(arcAngle))
-		
-		# Draw arc using quaternion
-		# for angle in np.linspace(0, self.delta):
-		# 	self.quaternion.apply(incoming_SoP)
-		
-		# Draw the arc using the above data
-		t = np.linspace(arc_StartAngle, arc_StartAngle + (2 * self.delta), 100)
-		y = r * np.cos(t)
-		z = r * np.sin(t)
-		x = np.zeros(y.size)
-		arc = LinePlot((x, y, z), width=15, color=self.color, parent=self.parentCanvas.view.scene)
-		arc.transform = scene.transforms.MatrixTransform()
-		arc.transform.rotate(2 * np.rad2deg(self.theta), (0, 0, 1))
-		arc.transform.translate(center)
-		
-		# Draw arrow head at the center (51st point) of the above arc to indicate the direction of rotation
-		arrowHead = np.array([(x[50], y[50], z[50], x[51], y[51],
-		                       z[51])])  # Arrow direction, position -Direction determined by the 50th point
-		
-		arrowSize = 5. if r > 0.2 else 3.
-		# The pos parameter is simply a line of short length same as that of the arrowhead
-		arrow = Arrow(pos=np.array([(x[50], y[50], z[50]), (x[51], y[51], z[51])]), color=self.color, method='gl',
-		              width=arrowSize, arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0, arrow_color=self.color,
-		              antialias=True, parent=self.parentCanvas.view.scene)
-		arrow.transform = scene.transforms.MatrixTransform()
-		arrow.transform.rotate(2 * np.rad2deg(self.theta), (0, 0, 1))
-		arrow.transform.translate(center)
+		if not all(SoP_vector==0):
+			# print("SoP=", SoP_vector, SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector))
+			# print("[1],[2]=", np.dot(SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector)))
+			
+			dot = np.dot(SoP_vector / np.linalg.norm(SoP_vector), circle_StartVector / np.linalg.norm(circle_StartVector))
+			if np.abs(dot) < 1.0001:  # Allow for numpy precision in calculations
+				dot = np.round(dot, 4)
+			arc_StartAngle = np.arccos(dot)
+			if SoP_vector[2] < 0:  # If the SoP is in the lower hemisphere,
+				arc_StartAngle = 2 * np.pi - arc_StartAngle  # determine the outer angle between the vectors
+			
+			# Debug Info
+			# print("center=",self.retarderDirection, si, center)
+			# scene.Text("◊", font_size=70, bold=True, color=self.color, parent=self.parentCanvas.view.scene, pos=center)  # To display the center point
+			# Line(np.array([center, arcStart]), connect='strip', method='gl', width=2, color=self.color, parent=self.parentCanvas.view.scene)
+			# print("line=", direction_of_intersection)
+			# print("Angle=", arcStart, circle_StartVector, SoP_vector, np.rad2deg(arc_StartAngle))#, np.rad2deg(arcAngle))
+			
+			# Draw arc using quaternion
+			# for angle in np.linspace(0, self.delta):
+			# 	self.quaternion.apply(incoming_SoP)
+			
+			# Draw the arc using the above data
+			t = np.linspace(arc_StartAngle, arc_StartAngle - self.delta, 100)
+			y = r * np.cos(t)
+			z = r * np.sin(t)
+			x = np.zeros(y.size)
+			arc = LinePlot((x, y, z), width=15, color=self.color, parent=self.parentCanvas.view.scene)
+			arc.transform = scene.transforms.MatrixTransform()
+			arc.transform.rotate(2 * np.rad2deg(self.theta), (0, 0, 1))
+			arc.transform.translate(center)
+			
+			# Draw arrow head at the center (51st point) of the above arc to indicate the direction of rotation
+			arrowHead = np.array([(x[50], y[50], z[50], x[51], y[51],
+			                       z[51])])  # Arrow direction, position -Direction determined by the 50th point
+			
+			arrowSize = 5. if r > 0.2 else 3.
+			# The pos parameter is simply a line of short length same as that of the arrowhead
+			arrow = Arrow(pos=np.array([(x[50], y[50], z[50]), (x[51], y[51], z[51])]), color=self.color, method='gl',
+			              width=arrowSize, arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0, arrow_color=self.color,
+			              antialias=True, parent=self.parentCanvas.view.scene)
+			arrow.transform = scene.transforms.MatrixTransform()
+			arrow.transform.rotate(2 * np.rad2deg(self.theta), (0, 0, 1))
+			arrow.transform.translate(center)
+		else:
+			warnings.warn(f"NOTE: No effect of retarder '{self.name}' on '{incoming_SoP.get_Name()}'", RetarderNote)
 	
 	@staticmethod
 	def create_from_schema(schema):

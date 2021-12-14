@@ -20,19 +20,24 @@ np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f
 
 
 canvas=PyOptiCADCanvas()
-plane1=RectangularSurface(Point(0,0,1.5), name='P1', mediumBefore='Air', mediumAfter='BK7', color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
+x1=Point(0,0,1.5)
+plane1=RectangularSurface(x1, name='P1', mediumBefore='Air', mediumAfter='BK7', color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
 # plane1.rotate_aboutX(-60)
 plane1.rotate_aboutY(150)
 plane1.showNormal()
 
-plane2=RectangularSurface(Point(1.7,0,0), name='P2', mediumBefore='BK7', mediumAfter='Air', color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
+x2=Point(1.7,0,0)
+plane2=RectangularSurface(x2, name='P2', mediumBefore='BK7', mediumAfter='Air', color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
 # plane2.rotate_aboutX(20)
 plane2.rotate_aboutY(270)
 plane2.showNormal()
 
-plane3 = RectangularSurface(Point(0.5,0.5,0.5), name='P3', color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
+x3=Point(0.5,0.5,0.5)
+plane3 = RectangularSurface(x3, name='P3', color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
 plane3.rotate_aboutY(45)
 plane3.showNormal()
+
+
 
 screen = RectangularScreen(Point(0.0, 0.0, 2.5), color= Color('green', alpha=0.9))
 

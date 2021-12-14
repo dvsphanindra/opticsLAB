@@ -110,7 +110,7 @@ class PolarizationEllipse_VispyCanvas(scene.SceneCanvas):
 
 if __name__ == '__main__':
 	p=PolarizationEllipse_VispyCanvas()
-	p.set_StokesVector(np.array((1,0,0,-1)))
+	p.set_StokesVector(np.array((1,0,1,0)))
 	
 	if sys.flags.interactive == 0:
 		vispy.app.run()

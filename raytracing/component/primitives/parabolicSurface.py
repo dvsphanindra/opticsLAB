@@ -48,8 +48,7 @@ class Parabolic_Surface(Surface):
 		dc = np.array((A, B, C))
 		normal_Direction = c * (
 					dc / np.linalg.norm(dc))  # Multiply with c to accommodate for the direction of the surface
-		assert all(isinstance(n, float) for n in normal_Direction), print("No real solution for normal direction: ",
-		                                                                  normal_Direction)
+		assert all(isinstance(n, float) for n in normal_Direction), print("No real solution for normal direction: ", normal_Direction)
 		# self.transform(normal_Direction)
 		return normal_Direction
 	

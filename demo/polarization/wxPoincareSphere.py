@@ -78,9 +78,9 @@ class wxPoincareTool(wxPoincareSphere_GUI.mainFrame):
 		self.panel_Poincare.canvas = PoincareSphere_VispyCanvas(app="wx", parent=self.panel_Poincare, sizes=self.panel_Poincare.GetSize(), azimuth=90, elevation=10, resizable=True, labels=("Q", "U", "V"))
 		
 		# Interactions with the figure
-		self.panel_Poincare.canvas.events.mouse_press.connect(self.canvas_ImageOnClick)
-		self.panel_Poincare.canvas.events.mouse_release.connect(self.canvas_ImageOnClickRelease)
-		self.panel_Poincare.canvas.events.mouse_move.connect(self.canvas_ImageMouseMotion)
+		self.panel_Poincare.canvas.canvas.events.mouse_press.connect(self.canvas_ImageOnClick)
+		self.panel_Poincare.canvas.canvas.events.mouse_release.connect(self.canvas_ImageOnClickRelease)
+		self.panel_Poincare.canvas.canvas.events.mouse_move.connect(self.canvas_ImageMouseMotion)
 		self.figure_LeftButtonPress = False
 		self.selected_object=None
 		self.intermediate_SoP = []
@@ -129,7 +129,7 @@ class wxPoincareTool(wxPoincareSphere_GUI.mainFrame):
 		for selected_object in self.project_componentsList:
 			if selected_object.get_Type() not in ["Project", "Detector"]:
 				selected_object.draw_visual(self.panel_Poincare.canvas)
-		self.poincareSphere=PoincareSphere(radius=1.0, center=(0.0, 0.0, 0.0), parentCanvas=self.panel_Poincare.canvas, labels=("Q", "U", "V"))
+		self.poincareSphere=PoincareSphere(radius=1.0, center=(0.0, 0.0, 0.0), parentCanvas=self.panel_Poincare.canvas.canvas, labels=("Q", "U", "V"))
 		
 	def displayComponentProperties(self, component):
 		# print(vars(component))
