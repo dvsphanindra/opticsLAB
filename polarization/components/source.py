@@ -86,24 +86,34 @@ class StateofPolarization(BaseComponent):
 		self.validate_StokesVector()
 		
 		self.color = kwargs.get("color")
+
+		self.labelObjectVisual = None
+		self.labelTextVisual = None
 		
 		if self.parentCanvas is not None:
-			self.draw_visual(self.parentCanvas)
-		
-		self.labelObject = None
-		self.labelText = None
+			self.draw_visual()
 		
 		print("----Source '%s' created----" % self.name)
 	
-	def draw_visual(self, parentCanvas):
-		self.parentCanvas = parentCanvas
-		self.labelObject = scene.Text("•", font_size=100, bold=True, color=self.color, parent=self.parentCanvas.view.scene,
-		                              pos=self.polarizationVector.transpose())
-		self.labelText = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentCanvas.view.scene,
-		                            pos=self.polarizationVector.transpose() + (
+	def draw_visual(self):
+		self.labelObjectVisual = scene.Text("•", font_size=100, bold=True, color=self.color, parent=self.parentCanvas.view.scene,
+		                                    pos=self.polarizationVector.transpose())
+		self.labelTextVisual = scene.Text(self.name, font_size=50, bold=True, color=self.color, parent=self.parentCanvas.view.scene,
+		                                  pos=self.polarizationVector.transpose() + (
 					                            0.15 * self.polarizationVector.transpose()))
-		self.labelObject.interactive = True
-		self.labelText.interactive = True
+		self.labelObjectVisual.interactive = True
+		self.labelTextVisual.interactive = True
+		
+	def display_Off(self):
+		self.labelObjectVisual.visible = False
+		self.labelTextVisual.visible = False
+		
+	def display_On(self):
+		self.labelObjectVisual.visible = True
+		self.labelTextVisual.visible = True
+		
+	def display(self, value):
+		self.display_On() if value else self.display_Off()
 	
 	@staticmethod
 	def create_from_schema(schema):

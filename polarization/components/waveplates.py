@@ -122,11 +122,11 @@ class Generic_Waveplate(BaseComponent):
 		self.__create_quaternion(self.delta, self.theta)
 		
 		if self.parentCanvas is not None:
-			self.draw_visual(parentCanvas=self.parentCanvas)
+			self.draw_visual()
 		
 		print("----Retarder '%s' created----" % self.name)
 	
-	def draw_visual(self, parentCanvas):
+	def draw_visual(self):  # (self, parentCanvas):
 		
 		if self.retarder_Arrow is not None:
 			# Delete the existing visuals if they exist
@@ -134,7 +134,7 @@ class Generic_Waveplate(BaseComponent):
 			self.labelText = None
 			self.retarderDirection = np.array([1, 0, 0])
 		
-		self.parentCanvas = parentCanvas
+		# self.parentCanvas = parentCanvas
 		arrowStart = (0, 0, 0)
 		arrowDirection = self.position - arrowStart
 		# Derive arrow position from the point and direction of arrow from the tangent (or direction cosine) of the line at the point

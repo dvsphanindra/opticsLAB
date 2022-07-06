@@ -56,14 +56,14 @@ class PolarizationEllipse_VispyCanvas(scene.SceneCanvas):
 	def draw_StokesVector(self):
 		# Refer https://en.wikipedia.org/wiki/Stokes_parameters for theory and notations of the polarization ellipse
 		I, Q, U, V = self.stokesVector  # Separate the stokes components
-		L = complex(Q,U)  # L: Intensity (Complex) of Linear Polarization, V: Intensity of Circular Polarization, I: Total Intensity
+		L = complex(Q, U)  # L: Intensity (Complex) of Linear Polarization, V: Intensity of Circular Polarization, I: Total Intensity
 		I_p = np.sqrt(Q ** 2 + U ** 2 + V ** 2)  # Intensity of polarized fraction of light
 		
 		# Calculate the major (A) and minor (B) axes, orientation of the polarization ellipse (theta) and handedness of polarization (h)
 		A = np.sqrt((I_p + np.absolute(L)) / 2)
 		B = np.sqrt((I_p - np.absolute(L)) / 2)
 		theta = np.angle(L)/2
-		h = np.sign(V)
+		handedness = np.sign(V)
 		
 		# Plot the ellipse
 		t = np.linspace(0, 2 * np.pi, 50)
@@ -73,25 +73,25 @@ class PolarizationEllipse_VispyCanvas(scene.SceneCanvas):
 		
 		x_values, y_values, _ = rotation.apply(points).T
 		
-		# print("(A,B), (L,absL), theta, (I_p, h) = ({0},{1}), ({2},{3}), {4},({5}, {6})".format(A, B, L, np.absolute(L), np.rad2deg(theta), I_p, h))
+		# print("(A,B), (L,absL), theta, (I_p, handedness) = ({0},{1}), ({2},{3}), {4},({5}, {6})".format(A, B, L, np.absolute(L), np.rad2deg(theta), I_p, handedness))
 		
 		if self.stokesVector_visual is not None:
-			self.stokesVector_visual.parent=None
-			self.stokesVectorArrow_visual.parent=None
+			self.stokesVector_visual.parent = None
+			self.stokesVectorArrow_visual.parent = None
 		
-		self.stokesVector_visual = scene.LinePlot((x_values, y_values), parent=self.view.scene)
+		self.stokesVector_visual = scene.LinePlot((x_values, y_values), parent=self.view.scene, marker_size=0)
 		
-		if h == -1:
+		if handedness == -1:
 			arrowHead = np.array([(x_values[7], y_values[7], 0, x_values[8], y_values[8], 0)])  # Arrow direction, position
 			
 			self.stokesVectorArrow_visual = Arrow(pos=np.array([(x_values[8], y_values[8], 0), (x_values[7], y_values[7], 0)]), color=self.color,
-			              method='gl', width=5., arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0,
+			              method='gl', width=5., arrows=arrowHead, arrow_type="triangle_30", arrow_size=2.0,
 			              arrow_color=self.color, antialias=True, parent=self.view.scene)
 		else:
 			arrowHead = np.array([(x_values[8], y_values[8], 0, x_values[7], y_values[7], 0)])  # Arrow direction, position
 			
 			self.stokesVectorArrow_visual = Arrow(pos=np.array([(x_values[8], y_values[8], 0), (x_values[7], y_values[7], 0)]), color=self.color,
-			              method='gl', width=5., arrows=arrowHead, arrow_type="angle_30", arrow_size=5.0,
+			              method='gl', width=5., arrows=arrowHead, arrow_type="triangle_30", arrow_size=2.0,
 			              arrow_color=self.color, antialias=True, parent=self.view.scene)
 			
 		
