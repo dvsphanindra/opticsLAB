@@ -9,6 +9,8 @@ from vispy.scene.visuals import XYZAxis
 
 from .primitives.constants import Z_AXIS_DIRECTION
 
+from .opticalPrimitives.Point import Point
+
 class OpticalAxis(LineVector):
 	def __init__(self, length=100, color='tomato', parentCanvas=None):
 		"""
@@ -66,5 +68,6 @@ def display_point(point, marker='•', size=80, color='yellow', parentCanvas=Non
 	:param parentCanvas: Canvas on which the object is to be rendered. Default is None
 	:return: If the scene object is None, then the visual for the point will be returned
 	"""
-	point_visual = scene.Text(marker, font_size=size, bold=True, color=color, parent=parentCanvas.view.scene, pos=point)
+	p1 = point.get_coordinates() if isinstance(point, Point) else np.array(point)
+	point_visual = scene.Text(marker, font_size=size, bold=True, color=color, parent=parentCanvas.view.scene, pos=p1)
 	if parentCanvas is None: return point_visual

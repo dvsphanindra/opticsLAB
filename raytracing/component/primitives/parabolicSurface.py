@@ -2,8 +2,8 @@ import numpy as np
 from vispy import scene
 from vispy.scene.visuals import SurfacePlot
 from .surface import Surface
-from ..miscellaneous_components import display_point
-
+# from ..miscellaneous_components import display_point
+# from pyOptiCAD.raytracing.component import Point
 
 class Parabolic_Surface(Surface):
 	def __init__(self, a, b, c, radius=1.0, center=(0, 0, 0), name=None, xTilt=0.0, yTilt=0.0, color='black', parentCanvas=None):
@@ -40,7 +40,7 @@ class Parabolic_Surface(Surface):
 	
 	def calculate_normalDirection(self, point):
 		# Calculate by using vector calculus formula: Normal=grad(F)@point
-		x0, y0, z0 = point #self.inverse_transform(point)
+		x0, y0, z0 = point  # self.inverse_transform(point)
 		a, b, c = self.parameters
 		A = 2 * x0 / a ** 2
 		B = 2 * y0 / b ** 2
@@ -54,7 +54,8 @@ class Parabolic_Surface(Surface):
 	
 	def calculate_RayIntersection(self, ray):
 		a, b, c = self.parameters
-		x0, y0, z0 = ray.get_StartPoint() # self.inverse_transform(ray.get_StartPoint())
+		# x0, y0, z0 = ray.get_StartPoint()
+		x0, y0, z0 = self.transform(ray.get_StartPoint())
 		dx, dy, dz = ray.get_Direction() # self.inverse_transform(ray.get_Direction())
 		
 		A = (dx / a) ** 2 + (dy / b) ** 2
@@ -71,10 +72,11 @@ class Parabolic_Surface(Surface):
 			r = root[0]
 			intersectionPoint = ray.get_StartPoint() + (r * ray.get_Direction())
 		
-		display_point(intersectionPoint, marker='+', color='teal', parentCanvas=self.parentCanvas)
-		# intersectionPoint=self.transform(intersectionPoint)
+		# display_point(intersectionPoint, marker='+', color='teal', parentCanvas=self.parentCanvas)
+		intersectionPoint=self.inverse_transform(intersectionPoint)
+		# intersectionPoint = Point(intersectionPoint[0], intersectionPoint[1], intersectionPoint[2], parentCanvas=self.parentCanvas)
 		# display_point(intersectionPoint, marker='x', color='white', parentCanvas=self.parentCanvas)
-		# print("intersection= ", intersectionPoint)
+		print("intersection= ", intersectionPoint)
 		return intersectionPoint
 	
 	def calculate_BeamIntersection(self, beam):

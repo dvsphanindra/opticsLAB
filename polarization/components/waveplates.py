@@ -15,7 +15,7 @@ from scipy.spatial.transform import Slerp
 from vispy import scene
 from vispy.scene.visuals import Arrow, LinePlot
 import warnings
-from pyOptiCAD.raytracing.component.primitives.custom_warnings import RetarderNote
+from .custom_warnings import RetarderNote
 
 from .component import BaseComponent
 from .source import StateofPolarization

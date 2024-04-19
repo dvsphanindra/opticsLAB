@@ -12,15 +12,15 @@ from vispy.scene.visuals import GridMesh
 
 from vispy.color import Color
 
-from ..components import Linear_Polariser
-from ..components import Generic_Waveplate
-from ..components import StateofPolarization
+from pyOptiCAD.polarization.components import Linear_Polariser
+from pyOptiCAD.polarization.components import Generic_Waveplate
+from pyOptiCAD.polarization.components import StateofPolarization
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.3f}'.format})
 
 # •◊×
 
-#sys.path.append("/media/DATA/Python_projects/pyOptiCAD/")
+#sys.path.append("/media/DATA/Python_projects/pyOptiCAD/polarization/")
 
 class Coordinate_Axes(XYZAxis_Labeled):
 	def __init__(self, parentCanvas, labels=("S1", "S2", "S3"), labels_off=False):

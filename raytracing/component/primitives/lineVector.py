@@ -15,7 +15,23 @@ class LineVector:
 		:param color: Color to be shown when the line is being visualized (Optional). Default='Blue'
 		:param parentCanvas: Canvas on which the object is to be rendered. Default is None
 		"""
-		self.lineStart = start.get_coordinates() if isinstance(start, Primitive_point) else np.array(start)
+		# self.lineStart_point = start.get_coordinates() if isinstance(start, Primitive_point) else np.array(start)
+		
+		self.length = length
+		self.color = color
+		self.lineEnd = None
+		self.vector = None
+		self.lineVisual = None
+		self.parentCanvas = parentCanvas
+		
+		# print(isinstance(start, Point))
+		# if isinstance(start, Point):
+		# 	self.lineStart_point = start
+		# 	self.lineStart_coordinates = start.get_coordinates()
+		# else:
+		self.lineStart_coordinates = np.array(start)
+		self.lineStart_point = start# Point(start, parentCanvas=self.parentCanvas)
+
 		self.name=name
 		
 		if not dc:
@@ -24,36 +40,35 @@ class LineVector:
 			self.direction = np.array(direction)
 		# TODO: assert
 		# assert self.direction-1 < 1, "No: {0}, {1}, {2}".format(self.direction[0]-1, self.direction[1]-1, self.direction[2]-1)
-		self.length = length
-		self.color = color
-		self.lineEnd = None
-		self.vector = None
-		self.lineVisual = None
-		self.parentCanvas = parentCanvas
 		
 		self.create_Vector()
 	
 	def create_Vector(self):
-		self.lineEnd = self.lineStart + self.length * self.direction
-		self.vector = self.lineEnd - self.lineStart
+		print(self.lineStart_point, self.length * self.direction)
+		# Check for is instance Point
+		# if not "Point" in self.lineStart_point.__str__():
+		# self.lineEnd = Point(self.lineStart_point.get_coordinates() + self.length * self.direction)
+		# self.vector = self.lineEnd.get_coordinates() - self.lineStart_point.get_coordinates()
+		
+		self.lineEnd = self.lineStart_point + self.length * self.direction
+		self.vector = self.lineEnd - self.lineStart_point
 		
 		# Create line Visual passing through two points
 		parent=None if self.parentCanvas is None else self.parentCanvas.view.scene
-		self.lineVisual = Line(np.array([self.lineStart, self.lineEnd]), connect='strip', method='gl', width=2,
-		                       color=self.color, parent=parent)
+		self.lineVisual = Line(np.array([self.lineStart_point, self.lineEnd]), connect='strip', method='gl', width=2,
+							   color=self.color, parent=parent)
 	
 	def update_Vector(self, endPoint):
-		endPoint = np.array(endPoint)
 		if not np.array_equal(self.lineEnd, endPoint):  # Do not update if there is no change
 			self.lineEnd = endPoint
-			self.vector = self.lineEnd - self.lineStart
+			self.vector = self.lineEnd - self.lineStart_point
 			self.length = np.linalg.norm(self.vector)
 			
 			self.lineVisual.parent=None # Remove the old visual
 			# Create line Visual passing through two points
 			parent = None if self.parentCanvas is None else self.parentCanvas.view.scene
-			self.lineVisual = Line(np.array([self.lineStart, self.lineEnd]), connect='strip', method='gl', width=2,
-			                       color=self.color, parent=parent)
+			self.lineVisual = Line(np.array([self.lineStart_point, self.lineEnd]), connect='strip', method='gl', width=2,
+								   color=self.color, parent=parent)
 	
 	def extend_Vector(self, length):
 		if self.length != length:  # Do not update if there is no change
@@ -61,12 +76,12 @@ class LineVector:
 			self.create_Vector()
 	
 	def get_Direction_Cosines(self):
-		direction_ratios = self.lineEnd - self.lineStart
+		direction_ratios = self.lineEnd - self.lineStart_point
 		direction_cosines = direction_ratios / np.linalg.norm(direction_ratios)
 		return direction_cosines
 	
 	def get_Direction_Angles(self):
-		direction_ratios = self.lineEnd - self.lineStart
+		direction_ratios = self.lineEnd - self.lineStart_point
 		direction_angles = np.rad2deg(np.arccos(direction_ratios / np.linalg.norm(direction_ratios)))
 		return direction_angles
 	
@@ -78,9 +93,8 @@ class LineVector:
 		Translate the vector to a new origin without changing the length
 		:param point: Starting Point to which the vector should be shifted
 		"""
-		point = np.array(point)
-		if not np.array_equal(self.lineStart, point):  # Do not update if there is no change
-			self.lineStart = point
+		if not np.array_equal(self.lineStart_point, point):  # Do not update if there is no change
+			self.lineStart_point = point
 			self.create_Vector()
 	
 	def rotate(self, axis, angle):

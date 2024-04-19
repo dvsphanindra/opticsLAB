@@ -6,17 +6,19 @@ from vispy import scene
 
 import vispy as vispy
 
-from miscellaneous import XYZAxis_Labeled, OpticalAxis
+from pyOptiCAD.raytracing.component.miscellaneous_components import XYZAxis_Labeled, OpticalAxis
 
-from detectors import RectangularScreen
+from pyOptiCAD.raytracing.component.detectors import RectangularScreen
 
-from sources import Ray, CircularBeam
+from pyOptiCAD.raytracing.component.sources import Ray, CircularBeam
 
 from vispy.color import Color
 
 from matplotlib import pyplot as plt
 
-from opticalPrimitives import Convex_Paraboloid, Concave_Paraboloid
+from pyOptiCAD.raytracing.component.opticalPrimitives.concaveParaboloid import Concave_Paraboloid
+from pyOptiCAD.raytracing.component.opticalPrimitives.convexParaboloid import Convex_Paraboloid
+
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 

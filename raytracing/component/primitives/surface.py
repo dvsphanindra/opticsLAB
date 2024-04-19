@@ -95,17 +95,17 @@ class Surface:
 		# Shift the surface back to origin of the pyOptiCAD as the point is defined wrt this origin
 		if not all(self.center == 0):
 			self.visual.transform.translate(-self.center)
-		self.visual.transform.translate(pos=np.array(point))
+		self.visual.transform.translate(np.array(point))
 		self.center = point
 		self.normal.translate(self.center)
 		self.__translationMatrix += self.center  # Update the translation matrix for transformation of coordinates
 	
 	def transform(self, point):
 		# TODO First rotate, then translate
-		# print("Point: ",point, self.translationMatrix)
+		print("Point: ",point)#, self.translationMatrix)
 		transformedPoint = np.array(self.__rotationMatrix.apply(point))# + self.__translationMatrix)
 		# transformedPoint = np.array(point+self.__translationMatrix)
-		# print("translated Point: ",point)
+		print("translated Point: ",transformedPoint)
 		return transformedPoint
 	
 	def inverse_transform(self, point):

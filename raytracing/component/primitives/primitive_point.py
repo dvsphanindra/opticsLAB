@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Primitive_point:
 	def __init__(self, x, y, z):
 		"""
@@ -9,6 +10,6 @@ class Primitive_point:
 		:param z: z coordinate of the Point
 		"""
 		self.coordinates = np.array((x, y, z))
-		
+	
 	def get_coordinates(self):
 		return self.coordinates

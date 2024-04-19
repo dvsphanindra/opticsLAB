@@ -1,28 +1,15 @@
-import numpy as np
-
 import sys
 
-from vispy import scene
-
+import numpy as np
 import vispy as vispy
-
-from component.miscellaneous_components import XYZAxis_Labeled, OpticalAxis
-
-from component.detectors import RectangularScreen
-
-from component.sources import Ray, CircularBeam
-
-from component.opticalPrimitives.rectangularSurface import RectangularSurface
-from  component.opticalPrimitives.conicSurface import ConicSurface
-
+from vispy import scene
 from vispy.color import Color
 
-from matplotlib import pyplot as plt
-
+from component.detectors import RectangularScreen
+from component.miscellaneous_components import OpticalAxis
 from component.opticalPrimitives.convexParaboloid import Convex_Paraboloid
-from component.opticalPrimitives.concaveParaboloid import Concave_Paraboloid
-
-from scipy.spatial.transform import Rotation
+from component.sources import Ray
+from component import Point
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
@@ -31,7 +18,7 @@ view = canvas.central_widget.add_view()
 view.camera = scene.TurntableCamera(up='y', fov=30)
 
 canvas.bgcolor = Color(color="lightsteelblue", alpha=0.5)
-XYZAxis_Labeled(parent=view.scene)
+#XYZAxis_Labeled(parent=view.scene)
 
 opticalAxis=OpticalAxis()
 # view.add(opticalAxis.get_visual())
@@ -77,10 +64,10 @@ screen = RectangularScreen(np.array((0.0, 0.0, 1.5)), color= Color('green', alph
 # conicSurface1 = ConicSurface((0,0,0), K=2, color=Color((0.3, 0.3, 1), alpha=0.3))
 # view.add(conicSurface1.get_Visual())
 
-ray1Start = np.array((-0.2, 0.35, -0))
+ray1Start = Point((-0.2, 0.35, -0))
 ray1Direction = np.array((0, 0, 1))
 
-ray2Start = np.array((-0.2, -0.35, -0))
+ray2Start = Point((-0.2, -0.35, -0))
 ray2Direction = np.array((0, 0, 1))
 
 incidentRay1 = Ray(ray1Start, ray1Direction, wavelength=0.35, color='green')

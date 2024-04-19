@@ -6,7 +6,8 @@ from component.detectors import RectangularScreen
 
 from component.sources import Ray, Ray_throughPoints, CircularBeam
 
-from component import X_AXIS_DIRECTION, Y_AXIS_DIRECTION, Z_AXIS_DIRECTION, ORIGIN, deg2DC, calculate_DirectionAngles, Z_AXIS_NEG_DIRECTION, Y_AXIS_NEG_DIRECTION, dc_from_points
+from component import X_AXIS_DIRECTION, Y_AXIS_DIRECTION, Z_AXIS_DIRECTION, ORIGIN, deg2DC, calculate_DirectionAngles, \
+	Z_AXIS_NEG_DIRECTION, Y_AXIS_NEG_DIRECTION, dc_from_points
 
 from component.opticalPrimitives.rectangularSurface import RectangularSurface
 
@@ -18,9 +19,9 @@ from matplotlib import pyplot as plt
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
-
-canvas=PyOptiCADCanvas()
-plane1=RectangularSurface(Point(0,0,0.8), mediumBefore='Air', mediumAfter='BK7', color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
+canvas = PyOptiCADCanvas()
+plane1 = RectangularSurface(Point(0, 0, 0.8), mediumBefore='Air', mediumAfter='BK7',
+                            color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
 # plane1.rotate_aboutX(-60)
 # plane1.rotate_aboutY(150)
 plane1.showNormal()
@@ -30,12 +31,11 @@ plane1.showNormal()
 # plane2.rotate_aboutY(270)
 # plane2.showNormal()
 
-plane3 = RectangularSurface(Point(0,0,1.5), color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
+plane3 = RectangularSurface(Point(0, 0, 1.5), color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
 plane3.rotate_aboutY(45)
 plane3.showNormal()
 
-screen = RectangularScreen(Point(0.0, 0.0, 2.5), color= Color('green', alpha=0.9))
-
+screen = RectangularScreen(Point(0.0, 0.0, 2.5), color=Color('green', alpha=0.9))
 
 ray1Start = Point(-0.3, 0.2, 0.0, parentCanvas=canvas)
 point_z = Point(-0.2, 0.2, 0.3, parentCanvas=canvas)
@@ -50,7 +50,8 @@ ray2Start.show(color='y')
 # ray2Direction = np.array((90, 90, 0))
 ray2Direction = Z_AXIS_DIRECTION
 
-incidentRay1 = Ray_throughPoints(ray1Start, point_z, length=1.2, wavelength=0.35, color='green', dc=True, parentCanvas=canvas)
+incidentRay1 = Ray_throughPoints(ray1Start, point_z, length=1.2, wavelength=0.35, color='green', dc=True,
+                                 parentCanvas=canvas)
 incidentRay2 = Ray(ray2Start, ray2Direction, wavelength=0.85, color='yellow', parentCanvas=canvas)
 incidentRay3 = Ray_throughPoints(ray1Start, point_x, color='cyan', parentCanvas=canvas)
 
@@ -60,8 +61,8 @@ incidentRay3 = Ray_throughPoints(ray1Start, point_x, color='cyan', parentCanvas=
 # r3 = incidentRay3.calculate_ReflectedRay(plane2).calculate_ReflectedRay(plane3).calculate_ReflectedRay(plane1)
 #
 # Refraction
-rr1=incidentRay1.calculate_RefractedRay(plane1).calculate_RefractedRay(plane3)
-rr2=incidentRay2.calculate_RefractedRay(plane1).calculate_RefractedRay(plane3)
+rr1 = incidentRay1.calculate_RefractedRay(plane1).calculate_RefractedRay(plane3)
+rr2 = incidentRay2.calculate_RefractedRay(plane1).calculate_RefractedRay(plane3)
 
 """
 # testRay=Ray(point1,direction,length=l,color='cyan')
@@ -103,4 +104,4 @@ plt.grid(True)
 plt.show()
 # """
 
-canvas.show() # Display the PyOptiCAD canvas
+canvas.show()  # Display the PyOptiCAD canvas

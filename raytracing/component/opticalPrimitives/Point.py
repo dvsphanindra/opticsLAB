@@ -1,14 +1,18 @@
+import numpy as np
 from vispy import scene
 from ..primitives.primitive_point import Primitive_point
 
+
 class Point(Primitive_point):
-	def __init__(self, x, y, z, parentCanvas=None):
+	def __init__(self, x, y=None, z=None, parentCanvas=None):
 		"""
 		Point Object. Creates a numpy array so that it is readily usable for further calculations
-		:param x: x coordinate of the Point
+		:param x: x coordinate of the Point or numpy array (x, y, z) or tuple (x, y, z)
 		:param y: y coordinate of the Point
 		:param z: z coordinate of the Point
 		"""
+		if not (isinstance(x, int) or isinstance(x, float) or "Point" in x.__str__()):
+			x, y, z = x  # numpy array
 		self.parentCanvas = parentCanvas
 		super().__init__(x, y, z)
 	
@@ -22,4 +26,3 @@ class Point(Primitive_point):
 		"""
 		scene.Text(marker, font_size=size, bold=True, color=color, parent=self.parentCanvas.view.scene,
 		           pos=self.coordinates)
-		
