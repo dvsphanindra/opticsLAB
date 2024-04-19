@@ -1,6 +1,6 @@
-# pyOptiCAD
+# opticsLAB
 
-3D-raytracing of optical systems. The aim of this package is to assist the optical designer in CAD design of optical
+3D-raytracing of optical systems. The aim of this package is to assist the optical designer in the design of optical
 systems. vispy library is used for 3D visualization.
 
 ## Description
