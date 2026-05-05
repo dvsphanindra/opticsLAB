@@ -4,7 +4,7 @@ from vispy.color import Color
 import sys
 from .miscellaneous_components import XYZAxis_Labeled, OpticalAxis
 
-class PyOptiCADCanvas:
+class OpticsLabCanvas:
 	def __init__(self, bgColor="lightsteelblue"):
 		self.bgColor = bgColor
 		self.canvas = scene.SceneCanvas(keys='interactive', bgcolor=Color(color=self.bgColor, alpha=0.5))

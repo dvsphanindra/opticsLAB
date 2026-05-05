@@ -1,5 +1,5 @@
 import numpy as np
-from .primitive_point import Primitive_point
+from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
 
 def deg2DC(angles, decimals=5):
 	"""
@@ -25,8 +25,8 @@ def dc_from_points(point1, point2, angles=False):
 	:param angles: to return the dc in direction angles
 	:return: Direction Cosines of the line between the two points
 	"""
-	p1 = point1.get_coordinates() if isinstance(point1, Primitive_point) else np.array(point1)
-	p2 = point2.get_coordinates() if isinstance(point2, Primitive_point) else np.array(point2)
+	p1 = point1.get_coordinates() if isinstance(point1, Point) else np.array(point1)
+	p2 = point2.get_coordinates() if isinstance(point2, Point) else np.array(point2)
 	direction_ratios = p2 - p1
 	dc = direction_ratios / np.linalg.norm(direction_ratios)
 	if angles: return np.rad2deg(np.arccos(dc))

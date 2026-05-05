@@ -14,7 +14,7 @@ from raytracing.component.sources import Ray, CircularBeam
 
 from raytracing.component.opticalPrimitives.rectangularSurface import RectangularSurface
 
-from raytracing.component.pyOptiCADCanvas import PyOptiCADCanvas
+from raytracing.component.OpticsLabCanvas import OpticsLabCanvas
 
 from vispy.color import Color
 
@@ -22,7 +22,7 @@ from matplotlib import pyplot as plt
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
-canvas = PyOptiCADCanvas()
+canvas = OpticsLabCanvas()
 # canvas = scene.SceneCanvas(keys='interactive', bgcolor='w')
 # view = canvas.central_widget.add_view()
 # view.camera = scene.TurntableCamera(up='y', fov=30)

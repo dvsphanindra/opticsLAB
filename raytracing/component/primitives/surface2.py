@@ -8,21 +8,20 @@ from .constants import Z_AXIS_DIRECTION
 from .primitive_point import Primitive_point
 from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
 
-
 class Surface:
 	def __init__(self, center, x_grid, y_grid, z_grid, name=None, xTilt=0.0, yTilt=0.0, color="black", parentCanvas=None):
 		"""
 		Creates a surface with the given center and normal with the specified media
-		:param center: Center of the plane with respect to the opticsLab coordinates. Can be a Point object or numpy array.
-		:param xTilt: tilt of the plane with respect to opticsLab X axis
-		:param yTilt: tilt of the plane with respect to opticsLab Y axis
+		:param center: Center of the plane with respect to the pyOptiCAD coordinates. Can be a Point object or numpy array.
+		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
+		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
 		:param: name: Name of the surface for debugging purposes (optional)
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "Green"
 		:param parentCanvas: Canvas on which the object is to be rendered. Default is None
 		"""
 		self.center = np.array((0, 0, 0))
 		self.name = name
-		final_center = center.get_coordinates() if isinstance(center, Point) else np.array(center)
+		final_center = center.get_coordinates() if isinstance(center, Primitive_point) else np.array(center)
 		normalDirection = Z_AXIS_DIRECTION  # Create a surface with normal parallel to z-axis direction (xy plane)
 		self.xTilt = xTilt
 		self.yTilt = yTilt
@@ -42,7 +41,6 @@ class Surface:
 		self.visual.transform = scene.transforms.MatrixTransform()
 		self.rotate_aboutX(self.xTilt)
 		self.rotate_aboutY(self.yTilt)
-		print("Here:")
 		self.translate(final_center)
 	
 	def get_Visual(self):
@@ -94,12 +92,12 @@ class Surface:
 		self.__rotate(angle, (0, 0, 1))
 	
 	def translate(self, point):
-		# p = point.get_coordinates() if isinstance(point, Point) else np.array(point)
-		# Shift the surface back to origin of the opticsLab as the point is defined wrt this origin
+		p = point.get_coordinates() if isinstance(point, Point) else np.array(point)
+		# Shift the surface back to origin of the pyOptiCAD as the point is defined wrt this origin
 		if not all(self.center == 0):
 			self.visual.transform.translate(-self.center)
-		self.visual.transform.translate(point)
-		self.center = point
+		self.visual.transform.translate(p)
+		self.center = p
 		self.normal.translate(self.center)
 		self.__translationMatrix += self.center  # Update the translation matrix for transformation of coordinates
 	

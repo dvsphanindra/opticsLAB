@@ -6,7 +6,7 @@ from .primitives.lineVector import LineVector
 from .materialProperties import refractiveIndex
 from .primitives.miscellaneous import dc_from_points
 from .primitives.primitive_point import Primitive_point
-from .opticalPrimitives.Point import Point
+from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
 
 
 class Ray(LineVector):
@@ -15,7 +15,7 @@ class Ray(LineVector):
 		"""
 		Creates a ray which propagates from the rayStart point in the direction given by rayDirection
 		:param startPoint: Starting point of the ray passed as a Point object
-		:param rayDirection: direction cosines of the ray or tilts in degrees with respect to pyOptiCAD coordinates
+		:param rayDirection: direction cosines of the ray or tilts in degrees with respect to opticsLab coordinates
 		:param: name: Name of the ray for debugging purposes (optional)
 		:param: dc: If the rayDirection is specified as dc or not. Default: False, that is direction is specified as angles in degrees
 		:param wavelength: wavelength of the ray in μm.
@@ -95,7 +95,7 @@ class Ray(LineVector):
 		reflectedRayDir = self.get_Direction() - (
 				2 * surfaceNormalDirection * np.dot(self.get_Direction(), surfaceNormalDirection))
 		
-		# Transform the point from surface coordinates to pyOptiCAD coordinates
+		# Transform the point from surface coordinates to opticsLab coordinates
 		# intersectionPoint+=surface.center
 		# print("intersectionPoint, Dir: ", intersectionPoint, reflectedRayDir)
 		# intersectionPoint=surface.transform(intersectionPoint)
@@ -120,8 +120,8 @@ class Ray_throughPoints(Ray):
 		:param color: Color to be shown when the ray is being visualized (Optional)
 		:param parentCanvas: Canvas on which the object is to be rendered. Default is None
 		"""
-		assert isinstance(point1, Point), "Ray_throughPoints class: point1 is not a Point object"
-		assert isinstance(point2, Point), "Ray_throughPoints class: point2 is not a Point object"
+		# assert isinstance(point1, Point), "Ray_throughPoints class: point1 is not a Point object"
+		# assert isinstance(point2, Point), "Ray_throughPoints class: point2 is not a Point object"
 		direction = dc_from_points(point1, point2)
 		super().__init__(startPoint=point1, rayDirection=direction, name=name, dc=True, wavelength=wavelength,
 		                 length=length, color=color, parentCanvas=parentCanvas)

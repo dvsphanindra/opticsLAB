@@ -10,7 +10,8 @@ from component.sources import Ray, Ray_throughPoints, CircularBeam
 from component import X_AXIS_DIRECTION, Y_AXIS_DIRECTION, Z_AXIS_DIRECTION, ORIGIN, deg2DC, calculate_DirectionAngles, \
 	Z_AXIS_NEG_DIRECTION, Y_AXIS_NEG_DIRECTION, dc_from_points
 
-from component import PyOptiCADCanvas, Point
+from component import OpticsLabCanvas
+from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
 
 from vispy.color import Color
 
@@ -18,7 +19,7 @@ from matplotlib import pyplot as plt
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
-canvas = PyOptiCADCanvas()
+canvas = OpticsLabCanvas()
 x1 = Point(0, 0, 0)
 a = 1.5
 b = 1.5

@@ -1,7 +1,8 @@
 import numpy as np
 from vispy.color import Color
 
-from component import PyOptiCADCanvas, Point
+from component import OpticsLabCanvas
+from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
 from component import Z_AXIS_DIRECTION
 from component.detectors import RectangularScreen
 from component.opticalPrimitives.convexParaboloid import Convex_Paraboloid
@@ -9,7 +10,7 @@ from component.sources import Ray, Ray_throughPoints
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
-canvas = PyOptiCADCanvas()
+canvas = OpticsLabCanvas()
 
 parabolicSurface1 = Convex_Paraboloid(1.5, 1.5, center=(0, 0, 0.), radius=0.5, name='P1', mediumBefore='Air',
                                       mediumAfter='BK7', color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)

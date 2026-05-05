@@ -6,5 +6,5 @@ from .primitives.constants import ORIGIN
 from .primitives.miscellaneous import deg2DC, dc2deg, dc_from_points
 from .primitives.miscellaneous import calculate_DirectionAngles
 
-from .pyOptiCADCanvas import PyOptiCADCanvas
+from .OpticsLabCanvas import OpticsLabCanvas
 from .opticalPrimitives.Point import Point

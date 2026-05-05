@@ -9,7 +9,7 @@ from component.detectors import RectangularScreen
 from component.miscellaneous_components import OpticalAxis
 from component.opticalPrimitives.convexParaboloid import Convex_Paraboloid
 from component.sources import Ray
-from component import Point
+from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 

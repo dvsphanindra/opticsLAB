@@ -1,5 +1,5 @@
 from ..primitives.plane import Plane
-from .Point import Point
+from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
 
 class RectangularSurface(Plane):
 	def __init__(self, center, name=None, length=1.0, width=1.0, xTilt=0.0, yTilt=0.0, mediumAfter="Air", mediumBefore="Air", color="green", parentCanvas=None):
