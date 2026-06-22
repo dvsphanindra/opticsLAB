@@ -6,17 +6,21 @@ from .surface import Surface
 # from opticsLab.raytracing.component import Point
 
 class Parabolic_Surface(Surface):
-	def __init__(self, a, b, c, radius=1.0, centerHoleRadius=0.0, center=(0, 0, 0), name=None, xTilt=0.0, yTilt=0.0, color='black', parentCanvas=None):
+	def __init__(self, a, b, c, radius=1.0, centerHoleRadius=0.0, center=(0, 0, 0),
+				 mediumAfter="Air", mediumBefore="Air", name=None, xTilt=0.0, yTilt=0.0,
+				 color='black', parentCanvas=None, n_r=100, n_theta=100):
 		"""
 		Creates the data of a paraboloid whose center, radius and a, b, c parameters are given as inputs
 		"""
 		# Generate the grid in cylindrical coordinates
+		self.mediumBefore = mediumBefore
+		self.mediumAfter = mediumAfter
 		self.radius = radius
 		self.centerHoleRadius = centerHoleRadius
 		
 		#r = np.linspace(0, self.radius, 100)
-		r = np.linspace(self.centerHoleRadius, self.radius, 100)
-		theta = np.linspace(0, 2 * np.pi, 100)
+		r = np.linspace(self.centerHoleRadius, self.radius, n_r)
+		theta = np.linspace(0, 2 * np.pi, n_theta)
 		R, THETA = np.meshgrid(r, theta)
 		
 		self.parameters = (a, b, c)
@@ -40,23 +44,40 @@ class Parabolic_Surface(Surface):
 
 		return z
 	
+	# def calculate_normalDirection(self, point):
+	# 	# Calculate by using vector calculus formula: Normal=grad(F)@point
+	# 	x0, y0, z0 = self.inverse_transform(point) #point #jay edit
+	# 	a, b, c = self.parameters
+	# 	A = 2 * x0 / (a ** 2)
+	# 	B = 2 * y0 / (b ** 2)
+	# 	C = -c
+	# 	dc = np.array((A, B, C))
+	# 	normal_Direction = c * (
+	# 				dc / np.linalg.norm(dc))  # Multiply with c to accommodate for the direction of the surface
+	# 	assert all(isinstance(n, float) for n in normal_Direction), print("No real solution for normal direction: ", normal_Direction)
+	#
+	# 	origin_transformed = self.transform(np.array([0.0,0.0,0.0])) #jay edit
+	# 	normal_Direction   = self.transform(normal_Direction) - origin_transformed #jay edit
+	#
+	# 	#self.transform(normal_Direction)   #dvs original
+	# 	return normal_Direction
+
 	def calculate_normalDirection(self, point):
-		# Calculate by using vector calculus formula: Normal=grad(F)@point
-		x0, y0, z0 = self.inverse_transform(point) #point #jay edit
+		x0, y0, z0 = self.inverse_transform(point)
 		a, b, c = self.parameters
-		A = 2 * x0 / (a ** 2)
-		B = 2 * y0 / (b ** 2)
-		C = -c
-		dc = np.array((A, B, C))
-		normal_Direction = c * (
-					dc / np.linalg.norm(dc))  # Multiply with c to accommodate for the direction of the surface
-		assert all(isinstance(n, float) for n in normal_Direction), print("No real solution for normal direction: ", normal_Direction)
 
-		origin_transformed = self.transform(np.array([0.0,0.0,0.0])) #jay edit
-		normal_Direction   = self.transform(normal_Direction) - origin_transformed #jay edit
+		local_normal = np.array([
+			2.0 * c * x0 / (a ** 2),
+			2.0 * c * y0 / (b ** 2),
+			-1.0
+		], dtype=float)
 
-		#self.transform(normal_Direction)   #dvs original
-		return normal_Direction
+		local_normal = local_normal / np.linalg.norm(local_normal)
+
+		global_normal = self.rotate_vector(local_normal)
+		global_normal = global_normal / np.linalg.norm(global_normal)
+
+		return global_normal
 	
 	# def calculate_RayIntersection(self, ray):
 	# 	a, b, c = self.parameters
@@ -152,3 +173,15 @@ class Parabolic_Surface(Surface):
 		y_grid = (self.radius - thickness) * np.sin(theta_grid) + self.center[1]
 		self.inner_cylinder_visual = SurfacePlot(x_grid, y_grid, z_grid, color=self.color, parent=self.parentCanvas)
 		# self.inner_cylinder_visual.transform = vispy.scene.transforms.MatrixTransform()
+
+	def is_point_inside_volume(self, point):
+		# Translate point to the cylinder's local coordinate system
+		local_point = self.inverse_transform(point)
+		x, y, z = local_point
+
+		# Inside cylinder if x^2 + y^2 <= radius^2 and z is within length
+		r_squared = x ** 2 + y ** 2
+
+		# Optionally, you don't even need to check Z here because the
+		# parabolic surfaces act as the top and bottom Z bounds!
+		return r_squared <= (self.radius ** 2 + 1e-5)
