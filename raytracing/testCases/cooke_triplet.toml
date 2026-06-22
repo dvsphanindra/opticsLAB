@@ -1,0 +1,44 @@
+[project]
+    title=''
+    date=''
+    projectowner=''
+    description=''
+
+[component1]
+    R1=0.0
+    R2=0.0
+    center=[0, 0, 0]
+    color='green'
+    radius=1.0
+    thickness=1.0
+    mediumBefore="Air"
+    mediumAfter="N-SK4"
+    name='M1'
+    description='this is a spherical lens'
+    type = ''
+
+[component2]
+    R1=0.0
+    R2=0.0
+    center=[0, 0, 0]
+    color='green'
+    radius=1.0
+    thickness=1.0
+    mediumBefore="Air"
+    mediumAfter="N-SK4"
+    name='M1'
+    description='this is a spherical lens'
+    type = ''
+
+[component3]
+    R1=0.0
+    R2=0.0
+    center=[0, 0, 0]
+    color='green'
+    radius=1.0
+    thickness=1.0
+    mediumBefore="Air"
+    mediumAfter="N-SK4"
+    name='M1'
+    description='this is a spherical lens'
+    type='SphericalLens'
