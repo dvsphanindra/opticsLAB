@@ -52,58 +52,152 @@ class Ray(LineVector):
 	
 	def update_Ray(self, point):
 		self.update_Vector(point)
-	
-	def calculate_RefractedRay(self, surface):
-		intersectionPoint = surface.calculate_RayIntersection(ray=self)
-		if intersectionPoint is None:
-			# Display a 'no intersection warning' marker on the ray
-			fail_mark = self.lineStart_point + self.direction * 0.5
-			display_point(fail_mark, marker='!', color='r', size=50, parentCanvas=self.parentCanvas)
-			return None
-		surfaceNormalDirection = surface.calculate_normalDirection(intersectionPoint)
-		
-		n1 = refractiveIndex(self.get_Wavelength(), surface.mediumBefore)
-		n2 = refractiveIndex(self.get_Wavelength(), surface.mediumAfter)
-		
-		r = n1 / n2  # n1 / n2  # TODO: to verify this formula why it is reverse
-		print("dir: ", self.get_Direction(), "surfDir: ", surfaceNormalDirection)
-		dotProduct = -np.dot(surfaceNormalDirection, self.get_Direction())
-		horizontalComp = 1 - (r * r * (1 - dotProduct ** 2))
-		assert horizontalComp >= 0, "Error in refraction (negative value under root):" + "normalDir={0}, dot product={1}, r={2}, [1-dot]={3}, horizontalComp**2={4}".format(
-			str(surfaceNormalDirection), dotProduct, r, 1 - dotProduct ** 2, horizontalComp)
-		
-		# refractedRayDir = (r * np.cross(self.normal, a)) - (self.normal * np.sqrt(1 - (r * r * np.dot(b, b))))
-		refractedRayDir = np.sqrt(horizontalComp) * surfaceNormalDirection + r * (
-				self.get_Direction() - dotProduct * surfaceNormalDirection)
-		
-		# intersectionPoint=surface.transform(intersectionPoint)
-		# refractedRayDir=surface.transform(refractedRayDir)
-		display_point(intersectionPoint, marker='o', color=self.color, parentCanvas=self.parentCanvas)
-		self.update_Ray(intersectionPoint)  # Extend the ray to meet the surface
-		return Ray(Point(intersectionPoint), refractedRayDir, wavelength=self.get_Wavelength(), color=self.get_Color(),
-		           dc=True, parentCanvas=self.parentCanvas)
-	
+
 	def calculate_ReflectedRay(self, surface):
-		intersectionPoint = surface.calculate_RayIntersection(ray=self)
-		if intersectionPoint is None:
-			# Display a intersection warning marker on the ray
-			fail_mark = self.lineStart_point + self.direction * 0.5
-			display_point(fail_mark, marker='!', color='r', size=50, parentCanvas=self.parentCanvas)
-			return None
-		surfaceNormalDirection = surface.calculate_normalDirection(intersectionPoint)
-		# i - (2*(i.n)n) -The second part denotes the component of i in the direction of n
-		reflectedRayDir = self.get_Direction() - (
-				2 * surfaceNormalDirection * np.dot(self.get_Direction(), surfaceNormalDirection))
-		
-		# Transform the point from surface coordinates to opticsLab coordinates
-		# intersectionPoint+=surface.center
-		# print("intersectionPoint, Dir: ", intersectionPoint, reflectedRayDir)
-		# intersectionPoint=surface.transform(intersectionPoint)
-		display_point(intersectionPoint, marker='o', color=self.color, parentCanvas=self.parentCanvas)
-		self.update_Ray(intersectionPoint)  # Extend the ray to meet the surface
-		
-		return Ray(Point(intersectionPoint), reflectedRayDir, wavelength=self.get_Wavelength(), color=self.get_Color(),
-		           dc=True, parentCanvas=self.parentCanvas)
+		"""
+        Delegates the reflection math to the target surface.
+        """
+		return surface.calculate_ReflectedRay(self)
+
+	def calculate_RefractedRay(self, surface):
+		"""
+		Delegates the reflection math to the target surface.
+		"""
+		return surface.calculate_RefractedRay(self)
+	
+	# def calculate_RefractedRay(self, surface):
+	# 	# intersectionPoint = surface.calculate_RayIntersection(ray=self)
+	# 	# if intersectionPoint is None:
+	# 	# 	# Display a 'no intersection warning' marker on the ray
+	# 	# 	fail_mark = self.lineStart_point + self.direction * 0.5
+	# 	# 	display_point(fail_mark, marker='!', color='r', size=50, parentCanvas=self.parentCanvas)
+	# 	# 	return None
+	#
+	# 	result = surface.calculate_RayIntersection(ray=self)  # JAY edit
+	#
+	# 	print(result)
+	#
+	# 	if result is None:
+	# 		fail_mark = self.lineStart_point + self.direction * 0.5
+	# 		display_point(fail_mark, marker='!', color='r', size=50, parentCanvas=self.parentCanvas)
+	# 		return None
+	#
+	# 	intersectionPoint, rayColor = result  # JAy edit 88-92
+	#
+	# 	n1 = refractiveIndex(self.get_Wavelength(), surface.mediumBefore)
+	# 	n2 = refractiveIndex(self.get_Wavelength(), surface.mediumAfter)
+	#
+	# 	surfaceNormalDirection = surface.calculate_normalDirection(intersectionPoint)
+	#
+	# 	r = n1 / n2  # n1 / n2  # TODO: to verify this formula why it is reverse
+	# 	print("dir: ", self.get_Direction(), "surfDir: ", surfaceNormalDirection)
+	# 	dotProduct = -np.dot(surfaceNormalDirection, self.get_Direction())
+	# 	horizontalComp = 1 - (r * r * (1 - dotProduct ** 2))
+	# 	assert horizontalComp >= 0, "Error in refraction (negative value under root):" + "normalDir={0}, dot product={1}, r={2}, [1-dot]={3}, horizontalComp**2={4}".format(
+	# 		str(surfaceNormalDirection), dotProduct, r, 1 - dotProduct ** 2, horizontalComp)
+	#
+	# 	#refractedRayDir = (r * np.cross(self.normal, a)) - (self.normal * np.sqrt(1 - (r * r * np.dot(b, b))))
+	# 	# refractedRayDir = np.sqrt(horizontalComp) * surfaceNormalDirection + r * (
+	# 	# 		self.get_Direction() - dotProduct * surfaceNormalDirection)                 #DVS original
+	#
+	# 	refractedRayDir = (r * self.get_Direction()) + ((r * dotProduct - np.sqrt(horizontalComp)) * surfaceNormalDirection) # jay edit
+	#
+	# 	#intersectionPoint=surface.transform(intersectionPoint)
+	# 	#refractedRayDir=surface.transform(refractedRayDir)
+	# 	display_point(intersectionPoint, marker='o', color=self.color, parentCanvas=self.parentCanvas)
+	# 	self.update_Ray(intersectionPoint)  # Extend the ray to meet the surface
+	# 	return Ray(Point(intersectionPoint), refractedRayDir, wavelength=self.get_Wavelength(), color=self.get_Color(),
+	# 	           dc=True, parentCanvas=self.parentCanvas)
+
+	# def calculate_RefractedRay(self, surface):
+	# 	result = surface.calculate_RayIntersection(ray=self)
+	#
+	# 	if result is None:
+	# 		fail_mark = self.lineStart_point + self.direction * 0.5
+	# 		display_point(fail_mark, marker='!', color='r', size=50, parentCanvas=self.parentCanvas)
+	# 		return None
+	#
+	# 	intersectionPoint, rayColor = result
+	#
+	# 	incidentDir = np.array(self.get_Direction(), dtype=float)
+	# 	print("beforwfhks",incidentDir)
+	# 	incidentDir = incidentDir / np.linalg.norm(incidentDir)
+	# 	print("afterjhdikdf",incidentDir)
+	#
+	# 	normalDir = np.array(surface.calculate_normalDirection(intersectionPoint), dtype=float)
+	# 	normalDir = normalDir / np.linalg.norm(normalDir)
+	#
+	# 	n1 = refractiveIndex(self.get_Wavelength(), surface.mediumBefore)
+	# 	n2 = refractiveIndex(self.get_Wavelength(), surface.mediumAfter)
+	#
+	# 	cos_i = -np.dot(normalDir, incidentDir)
+	# 	print("cos_i",cos_i)
+	#
+	# 	if cos_i < 0:
+	# 		normalDir = -normalDir
+	# 		cos_i = -np.dot(normalDir, incidentDir)
+	# 		n1, n2 = n2, n1
+	#
+	# 	eta = n1 / n2
+	# 	k = 1.0 - eta ** 2 * (1.0 - cos_i ** 2)
+	#
+	# 	if k < 0:
+	# 		newDir = incidentDir + 2.0 * cos_i * normalDir
+	# 		newDir = newDir / np.linalg.norm(newDir)
+	# 		new_start = intersectionPoint + 1e-5 * normalDir
+	# 	else:
+	# 		newDir = eta * incidentDir + (eta * cos_i - np.sqrt(k)) * normalDir
+	# 		newDir = newDir / np.linalg.norm(newDir)
+	# 		new_start = intersectionPoint - 1e-5 * normalDir
+	#
+	# 	display_point(intersectionPoint, marker='o', color=self.color, parentCanvas=self.parentCanvas)
+	# 	self.update_Ray(intersectionPoint)
+
+
+		# return Ray(Point(new_start), newDir,
+		# 		   wavelength=self.get_Wavelength(),
+		# 		   color=self.get_Color(),
+		# 		   dc=True,
+		# 		   parentCanvas=self.parentCanvas)
+
+
+	# def calculate_ReflectedRay(self, surface):
+	#
+	# 	result = surface.calculate_RayIntersection(ray=self)  # JAY edit
+	#
+	# 	print(result)
+	#
+	# 	if result is None:
+	# 		fail_mark = self.lineStart_point + self.direction * 0.5
+	# 		display_point(fail_mark, marker='!', color='r', size=50, parentCanvas=self.parentCanvas)
+	# 		return None
+	#
+	# 	intersectionPoint, rayColor = result                  #JAy edit 88-92
+	# 	#intersectionPoint = result
+	#
+	# 	# intersectionPoint = surface.calculate_RayIntersection(ray=self)
+	# 	#
+	# 	# if intersectionPoint is None:
+	# 	# 	# Display a intersection warning marker on the ray
+	# 	# 	fail_mark = self.lineStart_point + self.direction * 0.5
+	# 	# 	display_point(fail_mark, marker='!', color='r', size=50, parentCanvas=self.parentCanvas)
+	# 	# 	return None
+	#
+	# 	surfaceNormalDirection = surface.calculate_normalDirection(intersectionPoint)
+	# 	# i - (2*(i.n)n) -The second part denotes the component of i in the direction of n
+	# 	reflectedRayDir = self.get_Direction() - (
+	# 			2 * surfaceNormalDirection * np.dot(self.get_Direction(), surfaceNormalDirection))
+	#
+	# 	# Transform the point from surface coordinates to opticsLab coordinates
+	# 	#intersectionPoint+=surface.center
+	# 	print("intersectionPoint, Dir: ", intersectionPoint, reflectedRayDir)
+	# 	#intersectionPoint=surface.transform(intersectionPoint)
+	# 	display_point(intersectionPoint, marker='o', color=self.color, parentCanvas=self.parentCanvas)
+	# 	self.update_Ray(intersectionPoint)  # Extend the ray to meet the surface
+	#
+	#
+	# 	return Ray(Point(intersectionPoint), reflectedRayDir, wavelength=self.get_Wavelength(), color=self.get_Color(),
+	# 	           dc=True, parentCanvas=self.parentCanvas)
 
 
 class Ray_throughPoints(Ray):
