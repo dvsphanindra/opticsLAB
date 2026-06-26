@@ -51,4 +51,6 @@ Thumbs.db
 *__pycache__/
 
 # Other directories
+._*
+
 

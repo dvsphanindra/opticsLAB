@@ -9,7 +9,7 @@ def deg2DC(angles, decimals=5):
 	:return: Direction cosines corresponding to the input angles
 	"""
 	dc = np.around(np.cos(np.deg2rad(np.array(angles))), decimals=decimals)
-	print("dc, sum=",dc, np.around(np.sum(dc**2), decimals=2))
+	#print("dc, sum=",dc, np.around(np.sum(dc**2), decimals=2))
 	assert np.around(np.sum(dc**2), decimals=2) == 1, "Invalid angles for Direction Cosines. Sum!=1. Set dc=True if passing dc instead of angles"
 	return dc
 
