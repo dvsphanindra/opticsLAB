@@ -1,0 +1,11 @@
+[[components]]
+type = "Spherical Lens"
+name = "Spherical Lens"
+R1 = 80.0
+R2 = -80.0
+radius = 25.0
+thickness = 10.0
+center = [0.0, 0.0, 50.0]
+mediumBefore = "Air"
+mediumAfter = "Glass"
+color = "blue"

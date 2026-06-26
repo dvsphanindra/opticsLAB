@@ -1,0 +1,14 @@
+{
+  "components": [
+    {
+      "type": "Concave Paraboloid",
+      "name": "Concave Paraboloid",
+      "a": 12.0,
+      "b": 12.0,
+      "radius": 25.0,
+      "centerHoleRadius": 0.0,
+      "center": [0.0, 0.0, 100.0],
+      "color": "green"
+    }
+  ]
+}

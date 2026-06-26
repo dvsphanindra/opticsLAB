@@ -1,0 +1,9 @@
+[[components]]
+type = "Parabolic Mirror"
+name = "Parabolic Mirror"
+a = 10.0
+b = 10.0
+c = -1.0
+radius = 25.0
+center = [0.0, 0.0, 100.0]
+color = "green"

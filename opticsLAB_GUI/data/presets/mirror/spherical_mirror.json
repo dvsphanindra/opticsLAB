@@ -1,0 +1,12 @@
+{
+  "components": [
+    {
+      "type": "Spherical Mirror",
+      "name": "Spherical Mirror",
+      "radius_of_curvature": 100.0,
+      "aperture_radius": 25.0,
+      "center": [0.0, 0.0, 100.0],
+      "color": "green"
+    }
+  ]
+}
