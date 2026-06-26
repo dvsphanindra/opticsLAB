@@ -5,9 +5,9 @@ import sys
 from .miscellaneous_components import XYZAxis_Labeled, OpticalAxis
 
 class OpticsLabCanvas:
-	def __init__(self, bgColor="lightsteelblue"):
+	def __init__(self, parent=None,bgColor="lightsteelblue"):
 		self.bgColor = bgColor
-		self.canvas = scene.SceneCanvas(keys='interactive', bgcolor=Color(color=self.bgColor, alpha=0.5))
+		self.canvas = scene.SceneCanvas(parent=parent,keys='interactive', bgcolor=Color(color=self.bgColor, alpha=0.5))
 		self.view = self.canvas.central_widget.add_view()
 		self.view.camera = scene.TurntableCamera(up='y', fov=30)
 		

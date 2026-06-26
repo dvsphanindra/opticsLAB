@@ -44,7 +44,7 @@ class LineVector:
 		self.create_Vector()
 	
 	def create_Vector(self):
-		print(self.lineStart_point, self.length * self.direction)
+		#print(self.lineStart_point, self.length * self.direction)
 		# Check for is instance Point
 		# if not "Point" in self.lineStart_point.__str__():
 		# self.lineEnd = Point(self.lineStart_point.get_coordinates() + self.length * self.direction)

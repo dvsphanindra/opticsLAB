@@ -10,8 +10,7 @@ from component.sources import Ray, Ray_throughPoints, CircularBeam
 from component import X_AXIS_DIRECTION, Y_AXIS_DIRECTION, Z_AXIS_DIRECTION, ORIGIN, deg2DC, calculate_DirectionAngles, \
 	Z_AXIS_NEG_DIRECTION, Y_AXIS_NEG_DIRECTION, dc_from_points
 
-from component import OpticsLabCanvas
-from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
+from component import OpticsLabCanvas, Point
 
 from vispy.color import Color
 
@@ -73,4 +72,4 @@ print("normals current, actual = ", n1)  # , ray1)
 normal_quadric = Ray(intersection_point, n1, name='quadric_normal', dc=True, color='red', parentCanvas=canvas)
 # normal_actual=Ray(intersection_point, ray1, name='actual', dc=True, color='yellow', parentCanvas=canvas)
 
-canvas.show()  # Display the PyOptiCAD canvas
+canvas.show()  # Display the opticsLab canvas

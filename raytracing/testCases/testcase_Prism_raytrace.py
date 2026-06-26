@@ -1,4 +1,4 @@
-from component import PyOptiCADCanvas, Point, Z_AXIS_DIRECTION, dc_from_points
+from component import opticsLabCanvas, Point, Z_AXIS_DIRECTION, dc_from_points
 
 from component.detectors import RectangularScreen
 
@@ -17,7 +17,7 @@ import numpy as np
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
 
-canvas=PyOptiCADCanvas()
+canvas=opticsLabCanvas()
 plane1=RectangularSurface((0,0,0.5), name='P1', mediumBefore='Air', mediumAfter='BK7', color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
 plane1.rotate_aboutX(-20)
 plane1.rotate_aboutY(180)

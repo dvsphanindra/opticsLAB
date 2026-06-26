@@ -14,6 +14,7 @@ import vispy.app
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
+from vispy import scene
 
 def calculate_first_order_properties(triplet, entrance_radius=10.0, field_angle_deg=15.0,
                                      wavelength=0.5876, z_start=-20.0):
@@ -574,6 +575,13 @@ def test_cooke_triplet():
     #ray_heights = np.linspace(-5.0, 5.0, 5)
     nominal_focal_plane = None
     mean_z = None
+    ray_vertices = []
+    ray_colors = []
+    color_map = {
+        "blue":  [0.0, 0.0, 1.0, 1.0],
+        "green": [0.0, 1.0, 0.0, 1.0],
+        "red":   [1.0, 0.0, 0.0, 1.0]
+    }
 
     for name, wl in wavelengths.items():
         print(f"\n{name.upper()} light (λ = {wl:.3f} μm):")
@@ -581,6 +589,7 @@ def test_cooke_triplet():
         print(f"    N-SK4: {refractiveIndex(wl, 'N-SK4'):.6f}")
         print(f"    N-SF2: {refractiveIndex(wl, 'N-SF2'):.6f}")
 
+        color_rgba = color_map.get(name, [1.0, 1.0, 1.0, 0.6])
         focal_points = []
 
         my_start_points = [(0.0, 0.0, -20.0),
@@ -610,7 +619,7 @@ def test_cooke_triplet():
                 wavelength=wl,
                 color=name,
                 dc=False,
-                parentCanvas=canvas
+                parentCanvas=None#canvas
             )
 
             ray_failed = False
@@ -621,7 +630,20 @@ def test_cooke_triplet():
                     print(f"  ray start={start} -> Lens {i + 1}: No intersection")
                     ray_failed = True
                     break
+                #current_ray = refracted
+
+                # --- NEW BATCHING LOGIC ---
+                # Segment goes from current ray's start to the refracted ray's start (surface intersection)
+                p1 = current_ray.get_StartPoint()
+                p2 = refracted.get_StartPoint()
+
+                ray_vertices.append(p1)
+                ray_vertices.append(p2)
+                ray_colors.extend([color_rgba, color_rgba])
+                # --------------------------
+
                 current_ray = refracted
+
 
             if ray_failed:
                 continue
@@ -633,6 +655,13 @@ def test_cooke_triplet():
                 t_focus = -start_pt[1] / direction[1]
                 focal_z = start_pt[2] + t_focus * direction[2]
                 focal_points.append((start, focal_z))
+
+                # Create final point
+                final_pt = start_pt + t_focus * direction
+
+                ray_vertices.append(start_pt)
+                ray_vertices.append(final_pt)
+                ray_colors.extend([color_rgba, color_rgba])
 
                 print(
                     f"  ray start={start} -> "
@@ -659,6 +688,16 @@ def test_cooke_triplet():
 
     #print("\n" + "=" * 60)
     z_image_plane = nominal_focal_plane if nominal_focal_plane is not None else mean_z #79.9405#
+
+
+    # 3. Render all lines simultaneously using ONE VisPy object
+    if len(ray_vertices) > 0:
+        batched_rays = scene.visuals.Line(
+            pos=np.array(ray_vertices, dtype=np.float32),
+            color=np.array(ray_colors, dtype=np.float32),
+            connect='segments',
+            parent=canvas.view.scene
+        )
 
     screen = RectangularScreen(
         Point(0.0, 0.0, z_image_plane),

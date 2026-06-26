@@ -1,3 +1,4 @@
+from .. import Point
 from ..primitives.parabolicSurface import Parabolic_Surface
 
 class Convex_Paraboloid(Parabolic_Surface):
@@ -6,11 +7,11 @@ class Convex_Paraboloid(Parabolic_Surface):
 		Creates a convex paraboloid surface with the given center and normal with the specified media
 		:param a: surface axis along x direction
 		:param b: surface axis along y direction
-		:param center: Center of the plane with respect to the pyOptiCAD coordinates
+		:param center: Center of the plane with respect to the opticsLab coordinates
 		:param radius: radius of the surface. Default: 1.0
 		:param: name: Name of the surface for debugging purposes (optional)
-		:param xTilt: tilt of the plane with respect to pyOptiCAD X axis
-		:param yTilt: tilt of the plane with respect to pyOptiCAD Y axis
+		:param xTilt: tilt of the plane with respect to opticsLab X axis
+		:param yTilt: tilt of the plane with respect to opticsLab Y axis
 		:param mediumAfter: Medium after the surface
 		:param mediumBefore: Medium before the surface (optional). Default: "Air"
 		:param color: Colour of the surface. Can be among vispy colors or HTML colour (optional). Default: "green"
@@ -19,4 +20,5 @@ class Convex_Paraboloid(Parabolic_Surface):
 		self.mediumBefore = mediumBefore
 		self.mediumAfter = mediumAfter
 		c=1
+		assert isinstance(center, Point), "Convex_Paraboloid class: center is not a Point object"
 		super().__init__(a=a, b=b, c=c, center=center, radius=radius, name=name, xTilt=xTilt, yTilt=yTilt, color=color ,parentCanvas=parentCanvas)

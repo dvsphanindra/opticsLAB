@@ -11,8 +11,9 @@ class Point(Primitive_point):
 		:param y: y coordinate of the Point
 		:param z: z coordinate of the Point
 		"""
-		if not (isinstance(x, int) or isinstance(x, float) or "Point" in x.__str__()):
-			x, y, z = x  # numpy array
+		#if not (isinstance(x, int) or isinstance(x, float) or "Point" in x.__str__()): #DVS
+		if not (isinstance(x, (int, float, np.number)) or "Point" in x.__str__()):
+			x, y, z = x  # if x is a numpy array
 		self.parentCanvas = parentCanvas
 		super().__init__(x, y, z)
 	

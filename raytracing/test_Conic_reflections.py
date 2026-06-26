@@ -1,8 +1,7 @@
 import numpy as np
 from vispy.color import Color
 
-from component import OpticsLabCanvas
-from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
+from component import OpticsLabCanvas, Point
 from component import Z_AXIS_DIRECTION
 from component.detectors import RectangularScreen
 from component.opticalPrimitives.convexParaboloid import Convex_Paraboloid
@@ -53,4 +52,4 @@ r2 = incidentRay2.calculate_ReflectedRay(
 # beam2 = CircularBeam(center=Point(0,-0.1,0,parentCanvas=canvas), beamDirection=(a,b,c), radius=0.3, noOfRays=64, wavelength=0.85, color='green', dc=False, parentCanvas=canvas)
 # beam2.calculate_ReflectedBeam(plane1).calculate_ReflectedBeam(plane2).calculate_ReflectedBeam(plane3)
 
-canvas.show()  # Display the PyOptiCAD canvas
+canvas.show()  # Display the opticsLab canvas

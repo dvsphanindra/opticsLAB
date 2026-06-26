@@ -1,4 +1,4 @@
-from component import PyOptiCADCanvas, Point, Z_AXIS_DIRECTION, dc_from_points
+from component import opticsLabCanvas, Point, Z_AXIS_DIRECTION, dc_from_points
 
 from component.detectors import RectangularScreen
 
@@ -18,7 +18,7 @@ np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f
 
 
 
-canvas=PyOptiCADCanvas()
+canvas=opticsLabCanvas()
 # Add screen
 screen = RectangularScreen(np.array((0.0, 0.0, 1.5)), color= Color('green', alpha=0.9))
 

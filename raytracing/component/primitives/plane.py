@@ -4,14 +4,27 @@ from .surface import Surface
 from .custom_warnings import IntersectionWarning
 
 class Plane(Surface):
-	def __init__(self, center=(0, 0, 0), name=None, width=1.0, length=1.0, xTilt=0.0, yTilt=0.0, color='black', parentCanvas=None):
+	def __init__(self, center=(0, 0, 0), name=None, width=1.0, length=1.0, radius=None, xTilt=0.0, yTilt=0.0,
+				 color='black',  mediumBefore="Air", mediumAfter="Air", parentCanvas=None):
 		self.width = width / 2
 		self.length = length / 2
-		xx = np.linspace(-self.width, self.width, 10)
-		yy = np.linspace(-self.length, self.length, 10)
+		self.radius = radius
+		self.mediumBefore = mediumBefore
+		self.mediumAfter = mediumAfter
+
+		xx = np.linspace(-self.width, self.width, 1000)
+		yy = np.linspace(-self.length, self.length, 1000)
 		x_grid, y_grid = np.meshgrid(xx, yy)
 		z_grid = np.zeros(np.shape(x_grid))
-		super().__init__(center=center, x_grid=x_grid, y_grid=y_grid, z_grid=z_grid, name=name, xTilt=xTilt, yTilt=yTilt, color=color, parentCanvas=parentCanvas)
+
+		#z_grid = np.zeros_like(x_grid)
+
+		if self.radius is not None:
+			mask = x_grid ** 2 + y_grid ** 2 > self.radius ** 2
+			z_grid[mask] = np.nan
+
+		super().__init__(center=center, x_grid=x_grid, y_grid=y_grid, z_grid=z_grid,
+						 name=name, xTilt=xTilt, yTilt=yTilt, color=color, parentCanvas=parentCanvas)
 	
 	def calculate_BeamIntersectionPoints(self, beam):
 		"""
@@ -51,8 +64,40 @@ class Plane(Surface):
 			return None
 		intersection = l0 + (l * d)
 		# TODO To check whether the intersection point is within the surface. Return the point if within the surface
-		return intersection
+		local = self.inverse_transform(intersection)
+		x, y, z = local
+
+		if self.radius is not None:
+			if x * x + y * y > self.radius * self.radius:
+				return None
+		else:
+			if abs(x) > self.width or abs(y) > self.length:
+				return None
+
+		return intersection, ray.get_Color() #jay Edit
 	
 	def calculate_normalDirection(self, point):
 		# TODO To check whether the intersection point is within the surface. Return the normal if within the surface
 		return self.get_chiefNormalDirection()  # Normal Direction is the same everywhere for a plane
+
+
+	def is_point_inside_volume(self, point, tol=1e-6):
+		local = self.inverse_transform(point)
+		x, y, z = local
+
+		if self.radius is not None:
+			return x * x + y * y <= self.radius * self.radius + tol
+		return abs(x) <= self.width + tol and abs(y) <= self.length + tol
+
+
+	def surface_error(self, point):
+		local = self.inverse_transform(point)
+		x, y, z = local
+
+		if self.radius is not None:
+			radial_error = max(0.0, np.sqrt(x * x + y * y) - self.radius)
+			return abs(z) + radial_error
+
+		x_err = max(0.0, abs(x) - self.width)
+		y_err = max(0.0, abs(y) - self.length)
+		return abs(z) + x_err + y_err
