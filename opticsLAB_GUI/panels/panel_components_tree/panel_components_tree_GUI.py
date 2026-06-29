@@ -26,14 +26,6 @@ class MyPanel_panel_components_tree ( wx.Panel ):
 
         bSizer_components = wx.BoxSizer( wx.VERTICAL )
 
-        self.staticText_searchComponent = wx.StaticText( self, wx.ID_ANY, _(u"Search Component:"), wx.DefaultPosition, wx.DefaultSize, 0 )
-        self.staticText_searchComponent.Wrap( -1 )
-
-        bSizer_components.Add( self.staticText_searchComponent, 0, wx.ALL, 5 )
-
-        self.textCtrl_searchComponent = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-        bSizer_components.Add( self.textCtrl_searchComponent, 0, wx.ALL|wx.EXPAND, 5 )
-
         self.treeCtrl_projectComponents = wx.TreeCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_DEFAULT_STYLE )
         bSizer_components.Add( self.treeCtrl_projectComponents, 1, wx.ALL|wx.EXPAND, 5 )
 

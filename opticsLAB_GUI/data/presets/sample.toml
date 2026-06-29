@@ -1,0 +1,39 @@
+[project]
+name = "Test Project"
+designer = "XXX"
+approver = "YYY"
+description = "sckjwsnckjv wvvlijedlkv wjhvevv d  jvfedsv"
+vispy_elevation = 30
+vispy_azimuth = 230
+vispy_zoom = 1.5
+vispy_camera = "turntable"
+vispy_bg_color = "#FF00FFFF"
+version = "0.1"
+date_created = ""
+date_modified =""
+
+[[components]]
+type = "Concave Lens"
+name = "Concave Lens"
+R1 = -100.0
+R2 = 100.0
+radius = 25.0
+thickness = 10.0
+center = [0.0, 0.0, 50.0]
+mediumBefore = "Air"
+mediumAfter = "Glass"
+color = "blue"
+doc = ""
+
+[[components]]
+type = "Convex Lens"
+name = "Convex Lens"
+R1 = 100.0
+R2 = -100.0
+radius = 25.0
+thickness = 10.0
+center = [0.0, 0.0, 50.0]
+mediumBefore = "Air"
+mediumAfter = "Glass"
+color = "blue"
+doc = ""

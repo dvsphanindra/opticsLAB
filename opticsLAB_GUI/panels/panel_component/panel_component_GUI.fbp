@@ -188,6 +188,7 @@
                   <property name="window_extra_style"></property>
                   <property name="window_name"></property>
                   <property name="window_style"></property>
+                  <event name="OnListBox">listBox_lst_componentsOnListBox</event>
                 </object>
               </object>
               <object class="sizeritem" expanded="true">

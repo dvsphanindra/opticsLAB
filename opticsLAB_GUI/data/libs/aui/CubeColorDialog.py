@@ -18,9 +18,9 @@ except ImportError: # if it's not there locally, try the wxPython lib.
     import wx.lib.agw.cubecolourdialog as CCD
 
 
-class CubeColourDialogDemo(wx.Panel):
+class CubeColourDialogDemo(CCD):
 
-    def __init__(self, parent, log):
+    def __init__(self, parent):
 
         wx.Panel.__init__(self, parent, -1)
 
@@ -28,7 +28,7 @@ class CubeColourDialogDemo(wx.Panel):
         b = wx.Button(self, -1, "Create and Show a CubeColourDialog", (50, 70))
         self.Bind(wx.EVT_BUTTON, self.OnButton, b)
 
-        self.log = log
+        # self.log = log
 
 
     def OnButton(self, evt):
@@ -50,14 +50,7 @@ class CubeColourDialogDemo(wx.Panel):
             # ... then do something with it. The actual colour data will be
             # returned as a three-tuple (r, g, b) in this particular case.
             colour = self.colourData.GetColour()
-            self.log.WriteText('You selected: %s: %d, %s: %d, %s: %d, %s: %d\n' % ("Red", colour.Red(),
-                                                                                   "Green", colour.Green(),
-                                                                                   "Blue", colour.Blue(),
-                                                                                   "Alpha", colour.Alpha()))
-            self.log.WriteText('HSVA Components: %s: %d, %s: %d, %s: %d, %s: %d\n\n' % ("Hue", h,
-                                                                                        "Saturation", s,
-                                                                                        "Brightness", v,
-                                                                                        "Alpha", a))
+
             self.SetBackgroundColour(self.colourData.GetColour())
             self.Refresh()
 
@@ -65,19 +58,43 @@ class CubeColourDialogDemo(wx.Panel):
         # friend. Don't use it again!
         dlg.Destroy()
 
-
 #----------------------------------------------------------------------
 
-def runTest(frame, nb, log):
-    win = CubeColourDialogDemo(nb, log)
-    return win
+# overview = CCD.__doc__
+#
+# if __name__ == '__main__':
+#     import sys,os
+#     import run
+#     run.main(['', os.path.basename(sys.argv[0])] + sys.argv[1:])
 
-#----------------------------------------------------------------------
+class mainFrame ( wx.Frame ):
 
-overview = CCD.__doc__
 
-if __name__ == '__main__':
-    import sys,os
-    import run
-    run.main(['', os.path.basename(sys.argv[0])] + sys.argv[1:])
+    def __init__(self, parent):
+        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=wx.EmptyString, pos=wx.DefaultPosition,
+                          size=wx.Size(500, 300), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
+
+        self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
+
+        bSizer1 = wx.BoxSizer(wx.VERTICAL)
+
+        self.panel_ColorSelection = CubeColourDialogDemo(self)
+        bSizer1.Add(self.panel_ColorSelection, 1, wx.EXPAND | wx.ALL, 5)
+
+        self.SetSizer(bSizer1)
+        self.Layout()
+
+        self.Centre(wx.BOTH)
+
+
+if __name__ == "__main__":
+    app = wx.App(False)
+
+    GUI = mainFrame(None)
+
+    GUI.Raise()
+
+    GUI.Show(True)
+
+    app.MainLoop()
 

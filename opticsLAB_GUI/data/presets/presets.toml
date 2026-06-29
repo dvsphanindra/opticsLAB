@@ -1,0 +1,159 @@
+[[components]]
+type = "Concave Lens"
+name = "Concave Lens"
+R1 = -100.0
+R2 = 100.0
+radius = 25.0
+thickness = 10.0
+center = [0.0, 0.0, 50.0]
+mediumBefore = "Air"
+mediumAfter = "Glass"
+color = "#0000ffff"
+
+[[components]]
+type = "Convex Lens"
+name = "Convex Lens"
+R1 = 100.0
+R2 = -100.0
+radius = 25.0
+thickness = 10.0
+center = [0.0, 0.0, 50.0]
+mediumBefore = "Air"
+mediumAfter = "Glass"
+color = "#0000ffff"
+
+[[components]]
+type = "Parabolic Lens"
+name = "Parabolic Lens"
+a = 10.0
+b = 10.0
+c_front = -1.0
+c_back = 1.0
+radius = 25.0
+thickness = 10.0
+center = [0.0, 0.0, 50.0]
+mediumBefore = "Air"
+mediumAfter = "Glass"
+color = "#0000ffff"
+
+[[components]]
+type = "Spherical Lens"
+name = "Spherical Lens"
+R1 = 80.0
+R2 = -80.0
+radius = 25.0
+thickness = 10.0
+center = [0.0, 0.0, 50.0]
+mediumBefore = "Air"
+mediumAfter = "Glass"
+color = "#0000ffff"
+
+[[components]]
+type = "Concave Paraboloid"
+name = "Concave Paraboloid"
+a = 12.0
+b = 12.0
+radius = 25.0
+centerHoleRadius = 0.0
+center = [0.0, 0.0, 100.0]
+color = "#00ff00ff"
+
+[[components]]
+type = "Convex Paraboloid"
+name = "Convex Paraboloid"
+a = 12.0
+b = 12.0
+radius = 25.0
+centerHoleRadius = 0.0
+center = [0.0, 0.0, 100.0]
+color = "#00ff00ff"
+
+[[components]]
+type = "Parabolic Mirror"
+name = "Parabolic Mirror"
+a = 10.0
+b = 10.0
+c = -1.0
+radius = 25.0
+center = [0.0, 0.0, 100.0]
+color = "#00ff00ff"
+
+[[components]]
+type = "Parabolic Surface"
+name = "Parabolic Surface"
+a = 10.0
+b = 10.0
+c = -1.0
+radius = 25.0
+center = [0.0, 0.0, 100.0]
+color = "#00ff00ff"
+
+[[components]]
+type = "Spherical Mirror"
+name = "Spherical Mirror"
+radius_of_curvature = 100.0
+aperture_radius = 25.0
+center = [0.0, 0.0, 100.0]
+color = "#00ff00ff"
+
+[[components]]
+type = "Spherical Surface"
+name = "Spherical Surface"
+radius_of_curvature = 100.0
+aperture_radius = 25.0
+center = [0.0, 0.0, 100.0]
+color = "#00ff00ff"
+
+[[components]]
+type = "Ray"
+name = "Ray"
+center = [0.0, 0.0, -2.0]
+radius = 0.1
+direction = [0.0, 0.0, 1.0]
+wavelength = 0.55
+length = 5.0
+color = "#ffff00ff"
+
+[[components]]
+type = "Circular Beam"
+name = "Circular Beam"
+center = [0.0, 0.0, -2.0]
+radius = 0.5
+noOfRays = 12
+centerRay = true
+direction = [0.0, 0.0, 1.0]
+wavelength = 0.55
+length = 5.0
+color = "#ffff00ff"
+
+[[components]]
+type = "Rectangular Screen"
+name = "Rectangular Screen"
+center = [0.0, 0.0, 4.0]
+radius = 1.5
+xTilt = 0.0
+yTilt = 0.0
+color = "#ff0000ff"
+
+[[components]]
+type = "Rectangular Beam"
+name = "Rectangular Beam"
+center = [0.0, 0.0, -2.0]
+radius = 0.5
+length = 5.0
+noOfRays = 12
+direction = [0.0, 0.0, 1.0]
+wavelength = 0.55
+color = "#ffff00ff"
+
+[[components]]
+type = "Random Beam"
+name = "Random Beam"
+center = [0.0, 0.0, -2.0]
+radius = 0.5
+length = 5.0
+noOfRays = 12
+direction = [0.0, 0.0, 1.0]
+wavelength = 0.55
+color = "#ffff00ff"
+

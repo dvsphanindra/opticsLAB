@@ -13,22 +13,23 @@ import wx.xrc
 import gettext
 _ = gettext.gettext
 
-wx.ID_VIEWCOMP = 6000
-wx.ID_SHOWCOMP = 6001
-wx.ID_SHOWPROP = 6002
-wx.ID_SHOWPLOTPANEL = 6003
-wx.ID_SHOWSIMULATIONPANEL = 6004
-wx.ID_FULLSCREEN = 6005
-wx.ID_MODE = 6006
-wx.ID_SAVELAYOUT = 6007
-wx.ID_RESETLAYOUT = 6008
-wx.ID_LOADLAYOUT = 6009
-wx.ID_UNDOMENU = 6010
-wx.ID_REDOMENU = 6011
-wx.ID_DESELECTALL = 6012
-wx.ID_DOCUMENTATION = 6013
-wx.ID_EXAMPLE = 6014
-wx.ID_FINDCOMP = 6015
+wx.ID_CLOSEFILE = 6000
+wx.ID_VIEWCOMP = 6001
+wx.ID_SHOWCOMP = 6002
+wx.ID_SHOWPROP = 6003
+wx.ID_SHOWPLOTPANEL = 6004
+wx.ID_SHOWSIMULATIONPANEL = 6005
+wx.ID_FULLSCREEN = 6006
+wx.ID_MODE = 6007
+wx.ID_SAVELAYOUT = 6008
+wx.ID_RESETLAYOUT = 6009
+wx.ID_LOADLAYOUT = 6010
+wx.ID_UNDOMENU = 6011
+wx.ID_REDOMENU = 6012
+wx.ID_DESELECTALL = 6013
+wx.ID_DOCUMENTATION = 6014
+wx.ID_EXAMPLE = 6015
+wx.ID_FINDCOMP = 6016
 
 ###########################################################################
 ## Class MyFrame_opticsLAB_GUI
@@ -37,7 +38,7 @@ wx.ID_FINDCOMP = 6015
 class MyFrame_opticsLAB_GUI ( wx.Frame ):
 
     def __init__( self, parent ):
-        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 925,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 925,628 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
@@ -48,12 +49,20 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
         self.menu_File.Append( self.menuItem_new )
 
         self.menuItem_openFile = wx.MenuItem( self.menu_File, wx.ID_OPEN, _(u"Open File"), wx.EmptyString, wx.ITEM_NORMAL )
-        self.menuItem_openFile.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_FILE_OPEN, wx.ART_MENU ) )
+        self.menuItem_openFile.SetBitmap( wx.Bitmap( u"data/icons/openfile/openfile.ico", wx.BITMAP_TYPE_ANY ) )
         self.menu_File.Append( self.menuItem_openFile )
 
-        self.menuItem_openFolder = wx.MenuItem( self.menu_File, wx.ID_OPEN, _(u"Open Folder"), wx.EmptyString, wx.ITEM_NORMAL )
-        self.menuItem_openFolder.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_HELP_FOLDER, wx.ART_MENU ) )
+        self.menuItem_closeFile = wx.MenuItem( self.menu_File, wx.ID_CLOSEFILE, _(u"Close File"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menuItem_closeFile.SetBitmap( wx.Bitmap( u"data/icons/closefile/closefile.ico", wx.BITMAP_TYPE_ANY ) )
+        self.menu_File.Append( self.menuItem_closeFile )
+
+        self.menuItem_openFolder = wx.MenuItem( self.menu_File, wx.ID_ANY, _(u"Open Folder"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menuItem_openFolder.SetBitmap( wx.Bitmap( u"data/icons/openfolder/openfolder.ico", wx.BITMAP_TYPE_ANY ) )
         self.menu_File.Append( self.menuItem_openFolder )
+
+        self.menuItem_closefolder = wx.MenuItem( self.menu_File, wx.ID_ANY, _(u"Close Folder"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menuItem_closefolder.SetBitmap( wx.Bitmap( u"data/icons/closefolder/closefolder.ico", wx.BITMAP_TYPE_ANY ) )
+        self.menu_File.Append( self.menuItem_closefolder )
 
         self.menu_recent = wx.Menu()
         self.menu_File.AppendSubMenu( self.menu_recent, _(u"Recent") )
@@ -65,7 +74,7 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
         self.menu_File.Append( self.menuItem_save )
 
         self.menuItem_saveAs = wx.MenuItem( self.menu_File, wx.ID_SAVE, _(u"Save As"), wx.EmptyString, wx.ITEM_NORMAL )
-        self.menuItem_saveAs.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_FILE_SAVE, wx.ART_MENU ) )
+        self.menuItem_saveAs.SetBitmap( wx.Bitmap( u"data/icons/save/saveas.ico", wx.BITMAP_TYPE_ANY ) )
         self.menu_File.Append( self.menuItem_saveAs )
 
         self.menu_File.AppendSeparator()
@@ -96,6 +105,12 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
         self.menuItem_view_simulation = wx.MenuItem( self.menu_View, wx.ID_SHOWSIMULATIONPANEL, _(u"Show Simulation Panel\tCtrl+5"), wx.EmptyString, wx.ITEM_CHECK )
         self.menu_View.Append( self.menuItem_view_simulation )
         self.menuItem_view_simulation.Check( True )
+
+        self.menuItem_view_project_tree = wx.MenuItem( self.menu_View, wx.ID_ANY, _(u"Show Project Folder Tree")+ u"\t" + u"Ctrl+6", wx.EmptyString, wx.ITEM_NORMAL )
+        self.menu_View.Append( self.menuItem_view_project_tree )
+
+        self.menuItem_view_beam_launcher = wx.MenuItem( self.menu_View, wx.ID_ANY, _(u"Show Beam Launcher Panel")+ u"\t" + u"Ctrl+7", wx.EmptyString, wx.ITEM_NORMAL )
+        self.menu_View.Append( self.menuItem_view_beam_launcher )
 
         self.menu_View.AppendSeparator()
 
@@ -155,7 +170,7 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
 
         self.menu_lens.AppendSeparator()
 
-        self.menuItem_parabolicLens = wx.MenuItem( self.menu_lens, wx.ID_ANY, _(u"Parabolic  Lens"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menuItem_parabolicLens = wx.MenuItem( self.menu_lens, wx.ID_ANY, _(u"Parabolic Lens"), wx.EmptyString, wx.ITEM_NORMAL )
         self.menu_lens.Append( self.menuItem_parabolicLens )
 
         self.menuItem_sphericalLens = wx.MenuItem( self.menu_lens, wx.ID_ANY, _(u"Spherical Lens"), wx.EmptyString, wx.ITEM_NORMAL )
@@ -163,7 +178,31 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
 
         self.menu_components.AppendSubMenu( self.menu_lens, _(u"Lens") )
 
+        self.menu_detectors = wx.Menu()
+        self.menuItem_rectangularScreen = wx.MenuItem( self.menu_detectors, wx.ID_ANY, _(u"Rectangular Screen"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menu_detectors.Append( self.menuItem_rectangularScreen )
+
+        self.menu_components.AppendSubMenu( self.menu_detectors, _(u"Detectors") )
+
         self.m_menubar2.Append( self.menu_components, _(u"Components") )
+
+        self.menu_sources = wx.Menu()
+        self.menuItem_sourceRay = wx.MenuItem( self.menu_sources, wx.ID_ANY, _(u"Ray"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menu_sources.Append( self.menuItem_sourceRay )
+
+        self.subMenu_Beams = wx.Menu()
+        self.menuItem_CircularBeam = wx.MenuItem( self.subMenu_Beams, wx.ID_ANY, _(u"Circular Beam"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.subMenu_Beams.Append( self.menuItem_CircularBeam )
+
+        self.menuItem_rect = wx.MenuItem( self.subMenu_Beams, wx.ID_ANY, _(u"Rectangular Beam"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.subMenu_Beams.Append( self.menuItem_rect )
+
+        self.menuItem_randomBeam = wx.MenuItem( self.subMenu_Beams, wx.ID_ANY, _(u"Random Beam"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.subMenu_Beams.Append( self.menuItem_randomBeam )
+
+        self.menu_sources.AppendSubMenu( self.subMenu_Beams, _(u"Beams") )
+
+        self.m_menubar2.Append( self.menu_sources, _(u"Sources") )
 
         self.menu_edit = wx.Menu()
         self.menuItem_undo = wx.MenuItem( self.menu_edit, wx.ID_UNDOMENU, _(u"Undo"), wx.EmptyString, wx.ITEM_NORMAL )
@@ -188,24 +227,33 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
 
         self.menu_Help = wx.Menu()
         self.menuItem_Documentation = wx.MenuItem( self.menu_Help, wx.ID_DOCUMENTATION, _(u"Documentations"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menuItem_Documentation.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_HELP_BOOK, wx.ART_MENU ) )
         self.menu_Help.Append( self.menuItem_Documentation )
 
-        self.menuItem_examples = wx.MenuItem( self.menu_Help, wx.ID_EXAMPLE, _(u"Examples"), wx.EmptyString, wx.ITEM_NORMAL )
-        self.menu_Help.Append( self.menuItem_examples )
+        self.menu_Examples = wx.Menu()
+        self.menuItem_telescopeexmp = wx.MenuItem( self.menu_Examples, wx.ID_EXAMPLE, _(u"Telescope Example"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menu_Examples.Append( self.menuItem_telescopeexmp )
+
+        self.menuItem_cooketriplet = wx.MenuItem( self.menu_Examples, wx.ID_ANY, _(u"CookeTriplet"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menu_Examples.Append( self.menuItem_cooketriplet )
+
+        self.menu_Help.AppendSubMenu( self.menu_Examples, _(u"Examples") )
 
         self.menu_Help.AppendSeparator()
 
         self.menuItem_find_components = wx.MenuItem( self.menu_Help, wx.ID_FINDCOMP, _(u"Find Components"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menuItem_find_components.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_FIND, wx.ART_MENU ) )
         self.menu_Help.Append( self.menuItem_find_components )
 
         self.menuItem_about = wx.MenuItem( self.menu_Help, wx.ID_ABOUT, _(u"&About OpticsLAB"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.menuItem_about.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_INFORMATION, wx.ART_MENU ) )
         self.menu_Help.Append( self.menuItem_about )
 
         self.m_menubar2.Append( self.menu_Help, _(u"&Help") )
 
         self.SetMenuBar( self.m_menubar2 )
 
-        self.m_toolBar1 = self.CreateToolBar( wx.TB_FLAT|wx.TB_HORIZONTAL|wx.TB_TEXT, wx.ID_ANY )
+        self.m_toolBar1 = self.CreateToolBar( wx.TB_FLAT|wx.TB_TEXT, wx.ID_ANY )
         self.tool_New = self.m_toolBar1.AddTool( wx.ID_NEW, _(u"New"), wx.ArtProvider.GetBitmap( wx.ART_NEW, wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None )
 
         self.tool_save = self.m_toolBar1.AddTool( wx.ID_SAVE, _(u"Save"), wx.ArtProvider.GetBitmap( wx.ART_FILE_SAVE, wx.ART_TOOLBAR ), wx.NullBitmap, wx.ITEM_NORMAL, wx.EmptyString, wx.EmptyString, None )
@@ -239,9 +287,12 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
         self.Centre( wx.BOTH )
 
         # Connect Events
+        self.Bind( wx.EVT_CLOSE, self.OnCloseWindow )
         self.Bind( wx.EVT_MENU, self.menuItem_newOnMenuSelection, id = self.menuItem_new.GetId() )
-        self.Bind( wx.EVT_MENU, self.menuItem_openOnMenuSelection, id = self.menuItem_openFile.GetId() )
-        self.Bind( wx.EVT_MENU, self.menuItem_openOnMenuSelection, id = self.menuItem_openFolder.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_openFileOnMenuSelection, id = self.menuItem_openFile.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_closeFileOnMenuSelection, id = self.menuItem_closeFile.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_openFolderOnMenuSelection, id = self.menuItem_openFolder.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_closefolderOnMenuSelection, id = self.menuItem_closefolder.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_saveOnMenuSelection, id = self.menuItem_save.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_saveAsOnMenuSelection, id = self.menuItem_saveAs.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_exitOnMenuSelection, id = self.menuItem_exit.GetId() )
@@ -250,17 +301,35 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
         self.Bind( wx.EVT_MENU, self.menuItem_view_propertiesOnMenuSelection, id = self.menuItem_view_properties.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_view_plotsOnMenuSelection, id = self.menuItem_view_plots.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_view_simulationOnMenuSelection, id = self.menuItem_view_simulation.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_view_project_treeOnMenuSelection, id = self.menuItem_view_project_tree.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_view_beam_launcherOnMenuSelection, id = self.menuItem_view_beam_launcher.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_view_fullScreenOnMenuSelection, id = self.menuItem_view_fullScreen.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_ModeOnMenuSelection, id = self.menuItem_Mode.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_save_LayoutOnMenuSelection, id = self.menuItem_save_Layout.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_reset_Layout1OnMenuSelection, id = self.menuItem_reset_Layout1.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_Load_LayoutOnMenuSelection, id = self.menuItem_Load_Layout.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_parabolicMirrorOnMenuSelection, id = self.menuItem_parabolicMirror.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_sphericalMirrorOnMenuSelection, id = self.menuItem_sphericalMirror.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_concaveParaboloidOnMenuSelection, id = self.menuItem_concaveParaboloid.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_convexParaboloidOnMenuSelection, id = self.menuItem_convexParaboloid.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_parabolicSurfaceOnMenuSelection, id = self.menuItem_parabolicSurface.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_sphericalSurfaceOnMenuSelection, id = self.menuItem_sphericalSurface.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_concaveLensOnMenuSelection, id = self.menuItem_concaveLens.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_convexLensOnMenuSelection, id = self.menuItem_convexLens.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_parabolicLensOnMenuSelection, id = self.menuItem_parabolicLens.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_sphericalLensOnMenuSelection, id = self.menuItem_sphericalLens.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_rectangularScreenOnMenuSelection, id = self.menuItem_rectangularScreen.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_sourceRayOnMenuSelection, id = self.menuItem_sourceRay.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_CircularBeamOnMenuSelection, id = self.menuItem_CircularBeam.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_rectOnMenuSelection, id = self.menuItem_rect.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_randomBeamOnMenuSelection, id = self.menuItem_randomBeam.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_undoOnMenuSelection, id = self.menuItem_undo.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_redoOnMenuSelection, id = self.menuItem_redo.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_selectAllOnMenuSelection, id = self.menuItem_selectAll.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_deselectAllOnMenuSelection, id = self.menuItem_deselectAll.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_DocumentationOnMenuSelection, id = self.menuItem_Documentation.GetId() )
-        self.Bind( wx.EVT_MENU, self.menuItem_examplesOnMenuSelection, id = self.menuItem_examples.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_telescopeexmpOnMenuSelection, id = self.menuItem_telescopeexmp.GetId() )
+        self.Bind( wx.EVT_MENU, self.menuItem_cooketripletOnMenuSelection, id = self.menuItem_cooketriplet.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_find_componentsOnMenuSelection, id = self.menuItem_find_components.GetId() )
         self.Bind( wx.EVT_MENU, self.menuItem_aboutOnMenuSelection, id = self.menuItem_about.GetId() )
         self.Bind( wx.EVT_TOOL, self.tool_NewOnToolClicked, id = self.tool_New.GetId() )
@@ -274,18 +343,30 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
         self.Bind( wx.EVT_TOOL, self.tool_findOnToolClicked, id = self.tool_find.GetId() )
         self.Bind( wx.EVT_TOOL, self.tool_exportOnToolClicked, id = self.tool_export.GetId() )
         self.Bind( wx.EVT_TOOL, self.tool_ScreenshotOnToolClicked, id = self.tool_Screenshot.GetId() )
+        self.Bind( wx.EVT_TOOL, self.tool_helpOnToolClicked, id = self.tool_help.GetId() )
 
     def __del__( self ):
         pass
 
 
     # Virtual event handlers, override them in your derived class
+    def OnCloseWindow( self, event ):
+        event.Skip()
+
     def menuItem_newOnMenuSelection( self, event ):
         event.Skip()
 
-    def menuItem_openOnMenuSelection( self, event ):
+    def menuItem_openFileOnMenuSelection( self, event ):
         event.Skip()
 
+    def menuItem_closeFileOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_openFolderOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_closefolderOnMenuSelection( self, event ):
+        event.Skip()
 
     def menuItem_saveOnMenuSelection( self, event ):
         event.Skip()
@@ -311,6 +392,12 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
     def menuItem_view_simulationOnMenuSelection( self, event ):
         event.Skip()
 
+    def menuItem_view_project_treeOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_view_beam_launcherOnMenuSelection( self, event ):
+        event.Skip()
+
     def menuItem_view_fullScreenOnMenuSelection( self, event ):
         event.Skip()
 
@@ -324,6 +411,51 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
         event.Skip()
 
     def menuItem_Load_LayoutOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_parabolicMirrorOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_sphericalMirrorOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_concaveParaboloidOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_convexParaboloidOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_parabolicSurfaceOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_sphericalSurfaceOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_concaveLensOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_convexLensOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_parabolicLensOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_sphericalLensOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_rectangularScreenOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_sourceRayOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_CircularBeamOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_rectOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_randomBeamOnMenuSelection( self, event ):
         event.Skip()
 
     def menuItem_undoOnMenuSelection( self, event ):
@@ -341,7 +473,10 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
     def menuItem_DocumentationOnMenuSelection( self, event ):
         event.Skip()
 
-    def menuItem_examplesOnMenuSelection( self, event ):
+    def menuItem_telescopeexmpOnMenuSelection( self, event ):
+        event.Skip()
+
+    def menuItem_cooketripletOnMenuSelection( self, event ):
         event.Skip()
 
     def menuItem_find_componentsOnMenuSelection( self, event ):
@@ -381,6 +516,9 @@ class MyFrame_opticsLAB_GUI ( wx.Frame ):
         event.Skip()
 
     def tool_ScreenshotOnToolClicked( self, event ):
+        event.Skip()
+
+    def tool_helpOnToolClicked( self, event ):
         event.Skip()
 
 

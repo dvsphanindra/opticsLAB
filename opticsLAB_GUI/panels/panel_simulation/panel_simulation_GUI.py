@@ -27,8 +27,9 @@ class MyPanel_simulation ( wx.Panel ):
         self.m_panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         bSizer_simulation.Add( self.m_panel1, 1, wx.EXPAND |wx.ALL, 5 )
 
-        self.textCtrl_xyzvalue = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-        bSizer_simulation.Add( self.textCtrl_xyzvalue, 0, wx.ALL|wx.ALIGN_RIGHT, 5 )
+        self.gauge_Loading = wx.Gauge( self, wx.ID_ANY, 100, wx.DefaultPosition, wx.DefaultSize, wx.GA_HORIZONTAL )
+        self.gauge_Loading.SetValue( 0 )
+        bSizer_simulation.Add( self.gauge_Loading, 0, wx.ALL|wx.ALIGN_RIGHT, 5 )
 
 
         self.SetSizer( bSizer_simulation )

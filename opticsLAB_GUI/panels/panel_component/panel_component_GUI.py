@@ -67,6 +67,7 @@ class MyPanel_tree ( wx.Panel ):
         self.Layout()
 
         # Connect Events
+        self.listBox_lst_components.Bind( wx.EVT_LISTBOX, self.listBox_lst_componentsOnListBox )
         self.m_button_up.Bind( wx.EVT_BUTTON, self.m_button_upOnButtonClick )
         self.m_button_down.Bind( wx.EVT_BUTTON, self.m_button_downOnButtonClick )
         self.m_button_remove_component.Bind( wx.EVT_BUTTON, self.m_button_remove_componentOnButtonClick )
@@ -77,6 +78,9 @@ class MyPanel_tree ( wx.Panel ):
 
 
     # Virtual event handlers, override them in your derived class
+    def listBox_lst_componentsOnListBox( self, event ):
+        event.Skip()
+
     def m_button_upOnButtonClick( self, event ):
         event.Skip()
 

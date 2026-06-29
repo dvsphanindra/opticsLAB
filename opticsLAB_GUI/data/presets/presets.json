@@ -1,0 +1,150 @@
+{
+  "components": [
+    {
+      "type": "Concave Lens",
+      "name": "Concave Lens",
+      "R1": -100.0,
+      "R2": 100.0,
+      "radius": 25.0,
+      "thickness": 10.0,
+      "center": [
+        0.0,
+        0.0,
+        50.0
+      ],
+      "mediumBefore": "Air",
+      "mediumAfter": "Glass",
+      "color": "blue"
+    },
+    {
+      "type": "Convex Lens",
+      "name": "Convex Lens",
+      "R1": 100.0,
+      "R2": -100.0,
+      "radius": 25.0,
+      "thickness": 10.0,
+      "center": [
+        0.0,
+        0.0,
+        50.0
+      ],
+      "mediumBefore": "Air",
+      "mediumAfter": "Glass",
+      "color": "blue"
+    },
+    {
+      "type": "Parabolic Lens",
+      "name": "Parabolic Lens",
+      "a": 10.0,
+      "b": 10.0,
+      "c_front": -1.0,
+      "c_back": 1.0,
+      "radius": 25.0,
+      "thickness": 10.0,
+      "center": [
+        0.0,
+        0.0,
+        50.0
+      ],
+      "mediumBefore": "Air",
+      "mediumAfter": "Glass",
+      "color": "blue"
+    },
+    {
+      "type": "Spherical Lens",
+      "name": "Spherical Lens",
+      "R1": 80.0,
+      "R2": -80.0,
+      "radius": 25.0,
+      "thickness": 10.0,
+      "center": [
+        0.0,
+        0.0,
+        50.0
+      ],
+      "mediumBefore": "Air",
+      "mediumAfter": "Glass",
+      "color": "blue"
+    },
+    {
+      "type": "Concave Paraboloid",
+      "name": "Concave Paraboloid",
+      "a": 12.0,
+      "b": 12.0,
+      "radius": 25.0,
+      "centerHoleRadius": 0.0,
+      "center": [
+        0.0,
+        0.0,
+        100.0
+      ],
+      "color": "green"
+    },
+    {
+      "type": "Convex Paraboloid",
+      "name": "Convex Paraboloid",
+      "a": 12.0,
+      "b": 12.0,
+      "radius": 25.0,
+      "centerHoleRadius": 0.0,
+      "center": [
+        0.0,
+        0.0,
+        100.0
+      ],
+      "color": "green"
+    },
+    {
+      "type": "Parabolic Mirror",
+      "name": "Parabolic Mirror",
+      "a": 10.0,
+      "b": 10.0,
+      "c": -1.0,
+      "radius": 25.0,
+      "center": [
+        0.0,
+        0.0,
+        100.0
+      ],
+      "color": "green"
+    },
+    {
+      "type": "Parabolic Surface",
+      "name": "Parabolic Surface",
+      "a": 10.0,
+      "b": 10.0,
+      "c": -1.0,
+      "radius": 25.0,
+      "center": [
+        0.0,
+        0.0,
+        100.0
+      ],
+      "color": "green"
+    },
+    {
+      "type": "Spherical Mirror",
+      "name": "Spherical Mirror",
+      "radius_of_curvature": 100.0,
+      "aperture_radius": 25.0,
+      "center": [
+        0.0,
+        0.0,
+        100.0
+      ],
+      "color": "green"
+    },
+    {
+      "type": "Spherical Surface",
+      "name": "Spherical Surface",
+      "radius_of_curvature": 100.0,
+      "aperture_radius": 25.0,
+      "center": [
+        0.0,
+        0.0,
+        100.0
+      ],
+      "color": "green"
+    }
+  ]
+}
