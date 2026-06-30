@@ -153,7 +153,7 @@ def wavelength_to_rgb(wl_um):
         (r * a) ** gamma,
         (g * a) ** gamma,
         (b * a) ** gamma,
-        1.0
+        0.5
     )
 
 

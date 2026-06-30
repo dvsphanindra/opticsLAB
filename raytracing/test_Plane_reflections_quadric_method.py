@@ -11,7 +11,7 @@ from component import X_AXIS_DIRECTION, Y_AXIS_DIRECTION, Z_AXIS_DIRECTION, ORIG
 
 from component.opticalPrimitives.rectangularSurface import RectangularSurface
 
-from component import PyOptiCADCanvas, Point
+from component import OpticsLabCanvas, Point
 
 from vispy.color import Color
 
@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
-canvas = PyOptiCADCanvas()
+canvas = OpticsLabCanvas()
 x1 = Point(0, 0, 0)
 plane1 = RectangularSurface(x1, name='P1', mediumBefore='Air', mediumAfter='BK7', color=Color((0.3, 0.3, 1), alpha=0.3),
                             parentCanvas=canvas)
@@ -125,4 +125,4 @@ r2 = Ray(Point(p), n, name='actual', dc=True, color='white', parentCanvas=canvas
 # r1=Ray(p,n1,name='test',dc=True,color='red',parentCanvas=canvas)
 # r2=Ray(p,n,name='actual', dc=True, color='white', parentCanvas=canvas)
 
-canvas.show()  # Display the PyOptiCAD canvas
+canvas.show()  # Display the opticsLab canvas

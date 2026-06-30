@@ -85,22 +85,22 @@ class RectangularScreen(Plane):
         dotProduct = np.dot(self.get_chiefNormalDirection(), ray.get_Direction())
 
         if abs(dotProduct) < 1e-12:
-            return None, ray.get_Color()
+            return None
 
         w = ray.get_StartPoint() - self.center
         si = -np.dot(self.get_chiefNormalDirection(), w) / dotProduct
 
         if si < 0:
-            return None, ray.get_Color()
+            return None
 
         intersection = w + si * ray.get_Direction() + self.center
 
-        return intersection, ray.get_Color()
+        return intersection
 
     def stop_ray_on_screen(self, ray):
-        hit, hit_color = self.calculate_RayIntersection(ray)
+        hit = self.calculate_RayIntersection(ray)
         if hit is None:
-            return None, hit_color
+            return None
 
         last_exit_point = np.array(ray.get_StartPoint(), dtype=float)
         hit = np.array(hit, dtype=float)
@@ -113,4 +113,4 @@ class RectangularScreen(Plane):
         else:
             ray.update_Ray(hit)
 
-        return hit, hit_color
+        return hit

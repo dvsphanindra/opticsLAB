@@ -11,7 +11,9 @@ from component import X_AXIS_DIRECTION, Y_AXIS_DIRECTION, Z_AXIS_DIRECTION, ORIG
 
 from component.opticalPrimitives.rectangularSurface import RectangularSurface
 
-from component import PyOptiCADCanvas, Point
+from component import OpticsLabCanvas #, Point
+
+from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
 
 from vispy.color import Color
 
@@ -19,8 +21,8 @@ from matplotlib import pyplot as plt
 
 np.set_printoptions(precision=4, suppress=True, formatter={'float_kind': '{:0.2f}'.format})
 
-canvas = PyOptiCADCanvas()
-plane1 = RectangularSurface(Point(0, 0, 0.8), mediumBefore='Air', mediumAfter='BK7',
+canvas = OpticsLabCanvas()
+plane1 = RectangularSurface(Point(0, 0, 0.5), mediumBefore='Air', mediumAfter='BK7',
                             color=Color((0.3, 0.3, 1), alpha=0.3), parentCanvas=canvas)
 # plane1.rotate_aboutX(-60)
 # plane1.rotate_aboutY(150)
@@ -50,7 +52,7 @@ ray2Start.show(color='y')
 # ray2Direction = np.array((90, 90, 0))
 ray2Direction = Z_AXIS_DIRECTION
 
-incidentRay1 = Ray_throughPoints(ray1Start, point_z, length=1.2, wavelength=0.35, color='green', dc=True,
+incidentRay1 = Ray_throughPoints(ray1Start, point_z, length=5, wavelength=0.35, color='green', dc=True,
                                  parentCanvas=canvas)
 incidentRay2 = Ray(ray2Start, ray2Direction, wavelength=0.85, color='yellow', parentCanvas=canvas)
 incidentRay3 = Ray_throughPoints(ray1Start, point_x, color='cyan', parentCanvas=canvas)
@@ -104,4 +106,10 @@ plt.grid(True)
 plt.show()
 # """
 
-canvas.show()  # Display the PyOptiCAD canvas
+canvas.show()  # Display the opticsLab canvas
+
+
+
+
+
+

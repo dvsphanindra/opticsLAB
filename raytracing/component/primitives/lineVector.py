@@ -52,7 +52,10 @@ class LineVector:
 		
 		self.lineEnd = self.lineStart_point + self.length * self.direction
 		self.vector = self.lineEnd - self.lineStart_point
-		
+
+		if self.lineVisual:
+			self.lineVisual.parent = None    # Remove the old visual
+
 		# Create line Visual passing through two points
 		parent=None if self.parentCanvas is None else self.parentCanvas.view.scene
 		self.lineVisual = Line(np.array([self.lineStart_point, self.lineEnd]), connect='strip', method='gl', width=2,
@@ -63,7 +66,7 @@ class LineVector:
 			self.lineEnd = endPoint
 			self.vector = self.lineEnd - self.lineStart_point
 			self.length = np.linalg.norm(self.vector)
-			
+
 			self.lineVisual.parent=None # Remove the old visual
 			# Create line Visual passing through two points
 			parent = None if self.parentCanvas is None else self.parentCanvas.view.scene
@@ -76,14 +79,26 @@ class LineVector:
 			self.create_Vector()
 	
 	def get_Direction_Cosines(self):
-		direction_ratios = self.lineEnd - self.lineStart_point
-		direction_cosines = direction_ratios / np.linalg.norm(direction_ratios)
-		return direction_cosines
+		# direction_ratios = self.lineEnd - self.lineStart_point
+		# direction_cosines = direction_ratios / np.linalg.norm(direction_ratios)
+		# return direction_cosines
+		return self.direction
+
+	def set_Direction_Cosines(self, dc):
+		assert np.around(np.sum(dc ** 2), decimals=2) == 1, "Invalid angles for Direction Cosines. Sum!=1. Set dc=True if passing dc instead of angles"
+		self.direction = dc
+		self.create_Vector()
 	
 	def get_Direction_Angles(self):
-		direction_ratios = self.lineEnd - self.lineStart_point
-		direction_angles = np.rad2deg(np.arccos(direction_ratios / np.linalg.norm(direction_ratios)))
+		# direction_ratios = self.lineEnd - self.lineStart_point
+		# direction_angles = np.rad2deg(np.arccos(direction_ratios / np.linalg.norm(direction_ratios)))
+		direction_angles = np.rad2deg(np.arccos(self.direction / np.linalg.norm(self.direction)))
 		return direction_angles
+
+	def set_Direction_Angles(self, direction_angles, radians=False):
+		direction_angles = direction_angles if radians else np.deg2rad(direction_angles)
+		self.direction = deg2DC(direction_angles)
+		self.create_Vector()
 	
 	def get_visual(self):
 		return self.lineVisual

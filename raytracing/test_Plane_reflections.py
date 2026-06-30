@@ -73,4 +73,4 @@ beam2 = CircularBeam(center=Point(-0.6, 0.25, 0, parentCanvas=canvas), beamDirec
                      wavelength=0.85, color='maroon', dc=False, parentCanvas=canvas)
 beam2.calculate_ReflectedBeam(plane1).calculate_ReflectedBeam(plane2).calculate_ReflectedBeam(plane3)
 
-canvas.show()  # Display the PyOptiCAD canvas
+canvas.show()  # Display the opticsLab canvas

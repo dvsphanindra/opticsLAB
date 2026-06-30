@@ -9,6 +9,8 @@ from .primitives.primitive_point import Primitive_point
 from opticsLAB.raytracing.component.opticalPrimitives.Point import Point
 
 
+
+
 class Ray(LineVector):
 	def __init__(self, startPoint, rayDirection=None, name=None, dc=False, wavelength=0.55, length=1.0, color="green",
 	             parentCanvas=None):
@@ -23,20 +25,37 @@ class Ray(LineVector):
 		:param color: Color to be shown when the ray is being visualized (Optional)
 		:param parentCanvas: Canvas on which the object is to be rendered. Default is None
 		"""
+
 		# TODO select color based on wavelength
 		self.wavelength = wavelength
 		assert isinstance(startPoint, Point), "Ray class: startPoint is not a Point object"
 		self.startPoint = startPoint
 		super().__init__(startPoint.get_coordinates(), rayDirection, name, dc, length, color, parentCanvas=parentCanvas)
-	
+
+	"""def set_x_angle(self,angle, radians=False):
+		angle = angle if radians else np.deg2rad(angle)
+		self.direction[0] = np.cos(angle)
+		self.update_Vector(self.lineEnd)
+		# x = np.cos(angle)
+		# z = np.sqrt(1-x^2)
+		# self.direction = np.ar
+
+	def set_y_angle(self,angle, radians=False):
+		angle = angle if radians else np.deg2rad(angle)
+		self.direction[1] = np.cos(angle)
+
+	def set_z_angle(self,angle, radians=False):
+		angle = angle if radians else np.deg2rad(angle)
+		self.direction[2] = np.cos(angle)"""
+
 	def rotate_aboutX(self, angle):
-		pass
+		self.rotate(np.array((1, 0, 0)), angle)
 	
 	def rotate_aboutY(self, angle):
-		pass
+		self.rotate(np.array((0, 1, 0)), angle)
 	
 	def rotate_aboutZ(self, angle):
-		pass
+		self.rotate(np.array((0, 0, 1)), angle)
 	
 	def get_StartPoint(self):
 		return self.lineStart_point
@@ -251,7 +270,12 @@ class Beam:
 	def addRay(self, ray):
 		assert isinstance(ray, Ray), "Cannot append anything other than a Ray object"
 		self.rays.append(ray)
-	
+
+	def add_Beam(self, beam):
+		assert isinstance(beam, Beam), "Cannot append anything other than a Beam object"
+		for ray in beam.get_Rays():
+			self.rays.append(ray)
+
 	def calculate_ReflectedBeam(self, surface):
 		"""
 		Calculates and returns the direction of the reflected beam when a beam is incident on this surface
@@ -277,6 +301,18 @@ class Beam:
 			refractedBeam.addRay(refractedRay)
 		return refractedBeam
 
+	def rotate_aboutX(self, angle):
+		for ray in self.rays:
+			ray.rotate_aboutX(angle)
+
+	def rotate_aboutY(self, angle):
+		for ray in self.rays:
+			ray.rotate_aboutY(angle)
+
+	def rotate_aboutZ(self, angle):
+		for ray in self.rays:
+			ray.rotate_aboutZ(angle)
+
 
 class CircularBeam(Beam):
 	def __init__(self, center, radius=0, noOfRays=None, centerRay=True, wavelength=0.55, beamDirection=Z_AXIS_DIRECTION,
@@ -292,7 +328,7 @@ class CircularBeam(Beam):
 		
 		beamDirection_DC = beamDirection if dc else deg2DC(beamDirection)
 		
-		vector = np.array((radius, 0, 0))  # Create a vector pointing from center to the point on circumference
+		vector = np.array((1, 0, 0))  # Create a vector pointing from center to the point on circumference
 		# Find the axis of rotation between Z-axis and the beam direction
 		axis = np.cross(deg2DC(Z_AXIS_DIRECTION), beamDirection_DC)
 		dot_product = np.dot(deg2DC(Z_AXIS_DIRECTION), beamDirection_DC)
